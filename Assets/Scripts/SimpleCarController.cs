@@ -5,37 +5,25 @@ using System.Collections.Generic;
 public class SimpleCarController : MonoBehaviour
 {
     public List<AxleInfo> axleInfos; // the information about each individual axle
-    public float leftMotorSpeed;
-    public float rightMotorSpeed;
+    public float motorTorque;
 
-    private float leftMotorCurrentSpeed;
-    private float rightMotorCurrentSpeed;
+    public KeyCode accelerator;
+    public KeyCode breaking;
+    public KeyCode steerLeft;
+    public KeyCode steerRight;
+
+    private float leftMotorTorque;
+    private float rightMotorTorque;
 
     public void Update()
     {
-        if (Input.GetKey(KeyCode.LeftArrow))
-        {
-            leftMotorCurrentSpeed = leftMotorSpeed;
-        }
-        else
-        {
-            leftMotorCurrentSpeed = 0;
-        }
+        float accelerate = Input.GetKey(accelerator) ? 1f : 0f;
+        accelerate = Input.GetKey(breaking) ? -1f : accelerate;
+        float accelerateLeft = Input.GetKey(steerLeft) ? 1f : 0f;
+        float accelerateRight = Input.GetKey(steerRight) ? 1f : 0f;
 
-        if (Input.GetKey(KeyCode.RightArrow))
-        {
-            rightMotorCurrentSpeed = rightMotorSpeed;
-        }
-        else
-        {
-            rightMotorCurrentSpeed = 0;
-        }
-
-        if (Input.GetKey(KeyCode.DownArrow))
-        {
-            leftMotorCurrentSpeed = -leftMotorCurrentSpeed;
-            rightMotorCurrentSpeed = -rightMotorCurrentSpeed;
-        }
+        leftMotorTorque = motorTorque * accelerate + motorTorque * accelerateRight;
+        rightMotorTorque = motorTorque * accelerate + motorTorque * accelerateLeft;
     }
 
     public void FixedUpdate()
@@ -49,8 +37,8 @@ public class SimpleCarController : MonoBehaviour
             }
             if (axleInfo.motor)
             {
-                axleInfo.leftWheel.motorTorque = leftMotorCurrentSpeed;
-                axleInfo.rightWheel.motorTorque = rightMotorCurrentSpeed;
+                axleInfo.leftWheel.motorTorque = leftMotorTorque;
+                axleInfo.rightWheel.motorTorque = rightMotorTorque;
             }
 
             ApplyLocalPositionToVisuals(axleInfo.leftWheel);
