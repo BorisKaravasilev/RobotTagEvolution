@@ -466,6 +466,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2080044777207035745, guid: 05f32bf28fe4a3341bc5116afe0655e5, type: 3}
+      propertyPath: motorTorque
+      value: 5
+      objectReference: {fileID: 0}
     - target: {fileID: 5824273824043284837, guid: 05f32bf28fe4a3341bc5116afe0655e5, type: 3}
       propertyPath: m_Name
       value: Robot

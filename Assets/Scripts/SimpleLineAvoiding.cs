@@ -1,10 +1,12 @@
 using UnityEngine;
 using System.Collections.Generic;
-public Enum SensorValue{
+
+public enum SensorValue {
     Perimeter,
     SafeZone,
     Nothing
 }
+
 public class SimpleLineAvoiding : MonoBehaviour
 {
     // Public fields (exposed to inspector)
@@ -42,7 +44,7 @@ public class SimpleLineAvoiding : MonoBehaviour
     // Executes once in the beginning (good for initialization)
     public void Start()
     {
-        sensorValues = new bool[sensorTransforms.Count];
+        sensorValues = new SensorValue[sensorTransforms.Count];
         layer_mask_perimeter = LayerMask.GetMask("Perimeter");
         layer_mask_safeZone = LayerMask.GetMask("SafeZone");
     }
@@ -69,8 +71,8 @@ public class SimpleLineAvoiding : MonoBehaviour
             //}
             if (axleInfo.motor)
             {
-                axleInfo.leftWheel.motorTorque = leftMotorTorque;
-                axleInfo.rightWheel.motorTorque = rightMotorTorque;
+                axleInfo.leftWheel.motorTorque = leftMotorTorque * motorTorque;
+                axleInfo.rightWheel.motorTorque = rightMotorTorque * motorTorque;
             }
 
             ApplyLocalPositionToVisuals(axleInfo.leftWheel);
@@ -114,7 +116,7 @@ public class SimpleLineAvoiding : MonoBehaviour
                 Debug.DrawRay(sensorTransform.position, forwardEndPoint, Color.red);
                 sensorValues[i] = SensorValue.Perimeter;
             }
-            elif (Physics.Raycast(sensorTransform.position, fwd, 5, layer_mask_safeZone))
+            else if (Physics.Raycast(sensorTransform.position, fwd, 5, layer_mask_safeZone))
             {
                 Debug.DrawRay(sensorTransform.position, forwardEndPoint, Color.green);
                 sensorValues[i] = SensorValue.SafeZone;
