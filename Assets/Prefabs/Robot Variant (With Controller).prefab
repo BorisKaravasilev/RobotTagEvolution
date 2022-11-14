@@ -102,7 +102,7 @@ MonoBehaviour:
     rightWheel: {fileID: 5824273823373357619}
     motor: 1
     steering: 0
-  motorTorque: 100
+  motorTorque: 10
   sensorTransforms:
   - {fileID: 6629521084806672107}
 --- !u!4 &6629521084806672107 stripped
