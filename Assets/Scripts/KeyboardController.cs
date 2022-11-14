@@ -2,7 +2,7 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
-public class SimpleCarController : MonoBehaviour
+public class KeyboardController : MonoBehaviour
 {
     public List<AxleInfo> axleInfos; // the information about each individual axle
     public float motorTorque;
@@ -64,13 +64,4 @@ public class SimpleCarController : MonoBehaviour
         visualWheel.transform.position = position;
         visualWheel.transform.rotation = rotation;
     }
-}
-
-[System.Serializable]
-public class AxleInfo
-{
-    public WheelCollider leftWheel;
-    public WheelCollider rightWheel;
-    public bool motor; // is this wheel attached to motor?
-    public bool steering; // does this wheel apply steer angle?
 }
