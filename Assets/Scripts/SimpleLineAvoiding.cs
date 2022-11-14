@@ -1,6 +1,10 @@
 using UnityEngine;
 using System.Collections.Generic;
-
+public Enum SensorValue{
+    Perimeter,
+    SafeZone,
+    Nothing
+}
 public class SimpleLineAvoiding : MonoBehaviour
 {
     // Public fields (exposed to inspector)
@@ -11,8 +15,9 @@ public class SimpleLineAvoiding : MonoBehaviour
     // Private fields
     private float leftMotorTorque = 0f; // <-- Update me to a value between 0.0f - 1.0f
     private float rightMotorTorque = 0f; // <-- me too (if you want more speed then increase "motorTorque" in the inspector
-    private bool[] sensorValues;
-    int layer_mask;
+    private SensorValue[] sensorValues;
+    int layer_mask_perimeter;
+    int layer_mask_safeZone;
 
     /// <summary>
     /// Controller logic.
@@ -22,7 +27,7 @@ public class SimpleLineAvoiding : MonoBehaviour
         // Write your code here
         // ...
 
-        if (sensorValues[0] == false)
+        if (sensorValues[0] != SensorValue.Perimeter )
         {
             leftMotorTorque = 1f; 
             rightMotorTorque = 1f;
@@ -38,7 +43,8 @@ public class SimpleLineAvoiding : MonoBehaviour
     public void Start()
     {
         sensorValues = new bool[sensorTransforms.Count];
-        layer_mask = LayerMask.GetMask("Tape");
+        layer_mask_perimeter = LayerMask.GetMask("Perimeter");
+        layer_mask_safeZone = LayerMask.GetMask("SafeZone");
     }
 
     // Executes every frame
@@ -103,16 +109,22 @@ public class SimpleLineAvoiding : MonoBehaviour
             Vector3 fwd = sensorTransform.TransformDirection(Vector3.forward);
             Vector3 forwardEndPoint = sensorTransform.TransformDirection(Vector3.forward) * 10;
 
-            if (Physics.Raycast(sensorTransform.position, fwd, 5, layer_mask))
+            if (Physics.Raycast(sensorTransform.position, fwd, 5, layer_mask_perimeter))
             {
                 Debug.DrawRay(sensorTransform.position, forwardEndPoint, Color.red);
-                sensorValues[i] = true;
+                sensorValues[i] = SensorValue.Perimeter;
+            }
+            elif (Physics.Raycast(sensorTransform.position, fwd, 5, layer_mask_safeZone))
+            {
+                Debug.DrawRay(sensorTransform.position, forwardEndPoint, Color.green);
+                sensorValues[i] = SensorValue.SafeZone;
             }
             else
             {
-                Debug.DrawRay(sensorTransform.position, forwardEndPoint, Color.green);
-                sensorValues[i] = false;
+                Debug.DrawRay(sensorTransform.position, forwardEndPoint, Color.white);
+                sensorValues[i] = SensorValue.Nothing;
             }
+           
 
             i++;
         }
