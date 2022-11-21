@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-public enum SensorValue {
+public enum LightSensorValue {
     Perimeter,
     SafeZone,
     Nothing
@@ -9,60 +9,109 @@ public enum SensorValue {
 
 public class AvoiderController : MonoBehaviour
 {
-    // Public fields (exposed to inspector)
-    public List<AxleInfo> axleInfos; // the information about each individual axle
-    public float motorTorque;
-    public List<Transform> sensorTransforms;
+    #region Public fields (exposed to inspector)
+    // ============================================ Public fields (exposed to inspector)
+    
+    public List<AxleInfo> AxleInfos; // the information about each individual axle
+    public float MotorTorque;
     public bool Tagged = false;
 
+    [Header("Sensor Transforms")]
+    public Transform LeftLightSensor;  // on the bottom
+    public Transform RightLightSensor; // on the bottom
+    [Space]
+    public Transform LeftLeftDistanceSensor;
+    public Transform LeftDistanceSensor;
+    public Transform MiddleDistanceSensor;
+    public Transform RightDistanceSensor;
+    public Transform RightRightDistanceSensor;
+    [Space]
+    public Transform BackLeftDistanceSensor;
+    public Transform BackRightDistanceSensor;
+    
     [Header("LED Visualization")]
     public Renderer LEDRenderer;
     public Material AvoidingColor;
     public Material TaggedColor;
     public Material InSafeZoneColor;
 
-    // Private fields
+    #endregion
+
+    #region Private fields
+    // ============================================ Private fields
+    
     private float leftMotorTorque = 0f; // <-- Update me to a value between 0.0f - 1.0f
     private float rightMotorTorque = 0f; // <-- me too (if you want more speed then increase "motorTorque" in the inspector
-    private SensorValue[] sensorValues;
+
     private int layer_mask_perimeter;
     private int layer_mask_safeZone;
+    
+    // Sensor Values
+    private LightSensorValue leftLightSensorValue;  // on the bottom
+    private LightSensorValue rightLightSensorValue; // on the bottom
+    
+    private float LeftLeftDistanceSensorValue;
+    private float LeftDistanceSensorValue;
+    private float MiddleDistanceSensorValue;
+    private float RightDistanceSensorValue;
+    private float RightRightDistanceSensorValue;
 
+    private float BackLeftDistanceSensorValue;
+    private float BackRightDistanceSensorValue;
+
+    #endregion
+    
+    
     /// <summary>
     /// Controller logic.
     /// </summary>
     private void RobotController()
     {
-        // Setting LED colors
+        // LED Color
         if (Tagged)
         {
             LEDRenderer.material = TaggedColor;
         }
-        else if (sensorValues[0] == SensorValue.Nothing)
-        {
-            LEDRenderer.material = AvoidingColor;
-        }
-        else if (sensorValues[0] == SensorValue.SafeZone)
+        else if (leftLightSensorValue == LightSensorValue.SafeZone && 
+                 rightLightSensorValue == LightSensorValue.SafeZone)
         {
             LEDRenderer.material = InSafeZoneColor;
         }
-
-        if (sensorValues[0] != SensorValue.Perimeter )
+        else
         {
-            leftMotorTorque = 1f; 
+            LEDRenderer.material = AvoidingColor;
+        }
+
+        // Motor Speeds
+        if (leftLightSensorValue == LightSensorValue.Perimeter && 
+            rightLightSensorValue == LightSensorValue.Perimeter)
+        {
+            leftMotorTorque = -1f;
+            rightMotorTorque = -1f;
+        }
+        else if (leftLightSensorValue == LightSensorValue.Perimeter &&
+                   rightLightSensorValue != LightSensorValue.Perimeter)
+        {
+            leftMotorTorque = 1f;
+            rightMotorTorque = -1f;
+        }
+        else if (leftLightSensorValue != LightSensorValue.Perimeter &&
+                   rightLightSensorValue == LightSensorValue.Perimeter)
+        {
+            leftMotorTorque = -1f;
             rightMotorTorque = 1f;
         }
         else
         {
-            leftMotorTorque = 0f;
-            rightMotorTorque = 0f;
+            leftMotorTorque = 1f;
+            rightMotorTorque = 1f;
+            print("Driving forward");
         }
     }
 
     // Executes once in the beginning (good for initialization)
     public void Start()
     {
-        sensorValues = new SensorValue[sensorTransforms.Count];
         layer_mask_perimeter = LayerMask.GetMask("Perimeter");
         layer_mask_safeZone = LayerMask.GetMask("SafeZone");
         LEDRenderer.material = AvoidingColor;
@@ -76,10 +125,10 @@ public class AvoiderController : MonoBehaviour
     // Executes over a fixed period of time (good for physics calculations)
     public void FixedUpdate()
     {
-        EvaluateRaycasts();
+        ReadLightSensors();
         RobotController();
 
-        foreach (AxleInfo axleInfo in axleInfos)
+        foreach (AxleInfo axleInfo in AxleInfos)
         {
             // We steer by difference in motor speeds
 
@@ -90,8 +139,8 @@ public class AvoiderController : MonoBehaviour
             //}
             if (axleInfo.motor)
             {
-                axleInfo.leftWheel.motorTorque = leftMotorTorque * motorTorque;
-                axleInfo.rightWheel.motorTorque = rightMotorTorque * motorTorque;
+                axleInfo.leftWheel.motorTorque = leftMotorTorque * MotorTorque;
+                axleInfo.rightWheel.motorTorque = rightMotorTorque * MotorTorque;
             }
 
             if (Tagged)
@@ -123,15 +172,16 @@ public class AvoiderController : MonoBehaviour
         visualWheel.transform.position = position;
         visualWheel.transform.rotation = rotation;
     }
-
-    /// <summary>
-    /// Collects the sensor values to an array.
-    /// </summary>
-    private void EvaluateRaycasts()
+    
+    private void ReadLightSensors()
     {
-        int i = 0;
+        leftLightSensorValue = ReadSensor(LeftLightSensor);
+        rightLightSensorValue = ReadSensor(RightLightSensor);
+        
+        print(leftLightSensorValue);
 
-        foreach (Transform sensorTransform in sensorTransforms)
+        // Local function (function in a function)
+        LightSensorValue ReadSensor(Transform sensorTransform)
         {
             Vector3 fwd = sensorTransform.TransformDirection(Vector3.forward);
             Vector3 forwardEndPoint = sensorTransform.TransformDirection(Vector3.forward) * 10;
@@ -139,20 +189,22 @@ public class AvoiderController : MonoBehaviour
             if (Physics.Raycast(sensorTransform.position, fwd, 5, layer_mask_perimeter))
             {
                 Debug.DrawRay(sensorTransform.position, forwardEndPoint, Color.red);
-                sensorValues[i] = SensorValue.Perimeter;
+                return LightSensorValue.Perimeter;
             }
-            else if (Physics.Raycast(sensorTransform.position, fwd, 5, layer_mask_safeZone))
+            
+            if (Physics.Raycast(sensorTransform.position, fwd, 5, layer_mask_safeZone))
             {
                 Debug.DrawRay(sensorTransform.position, forwardEndPoint, Color.green);
-                sensorValues[i] = SensorValue.SafeZone;
-            }
-            else
-            {
-                Debug.DrawRay(sensorTransform.position, forwardEndPoint, Color.white);
-                sensorValues[i] = SensorValue.Nothing;
+                return LightSensorValue.SafeZone;
             }
 
-            i++;
+            Debug.DrawRay(sensorTransform.position, forwardEndPoint, Color.white);
+            return LightSensorValue.Nothing;
         }
+    }
+
+    private void ReadDistanceSensors()
+    {
+        // TODO: Balazs integrates his code here (feel free to take inspiration from the method above)
     }
 }

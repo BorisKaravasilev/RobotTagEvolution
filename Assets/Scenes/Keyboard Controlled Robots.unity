@@ -221,6 +221,16 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!146 &305584692 stripped
+WheelCollider:
+  m_CorrespondingSourceObject: {fileID: 8224753508027131705, guid: 53fd9b22e929d5d42a815a912e781af6, type: 3}
+  m_PrefabInstance: {fileID: 1176040412}
+  m_PrefabAsset: {fileID: 0}
+--- !u!146 &402417587 stripped
+WheelCollider:
+  m_CorrespondingSourceObject: {fileID: 8224753508027131705, guid: 53fd9b22e929d5d42a815a912e781af6, type: 3}
+  m_PrefabInstance: {fileID: 4446721191115168449}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &705507993
 GameObject:
   m_ObjectHideFlags: 0
@@ -315,6 +325,11 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
+--- !u!146 &742851671 stripped
+WheelCollider:
+  m_CorrespondingSourceObject: {fileID: 3130332208514655391, guid: 53fd9b22e929d5d42a815a912e781af6, type: 3}
+  m_PrefabInstance: {fileID: 1176040412}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &963194225
 GameObject:
   m_ObjectHideFlags: 0
@@ -478,12 +493,33 @@ PrefabInstance:
       propertyPath: accelerator
       value: 119
       objectReference: {fileID: 0}
+    - target: {fileID: 4446721192843702339, guid: 53fd9b22e929d5d42a815a912e781af6, type: 3}
+      propertyPath: axleInfos.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4446721192843702339, guid: 53fd9b22e929d5d42a815a912e781af6, type: 3}
+      propertyPath: axleInfos.Array.data[1].motor
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4446721192843702339, guid: 53fd9b22e929d5d42a815a912e781af6, type: 3}
+      propertyPath: axleInfos.Array.data[0].leftWheel
+      value: 
+      objectReference: {fileID: 305584692}
+    - target: {fileID: 4446721192843702339, guid: 53fd9b22e929d5d42a815a912e781af6, type: 3}
+      propertyPath: axleInfos.Array.data[0].rightWheel
+      value: 
+      objectReference: {fileID: 742851671}
     - target: {fileID: 4446721192843702462, guid: 53fd9b22e929d5d42a815a912e781af6, type: 3}
       propertyPath: m_Name
       value: Robot (Player 2)
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 53fd9b22e929d5d42a815a912e781af6, type: 3}
+--- !u!146 &1812266531 stripped
+WheelCollider:
+  m_CorrespondingSourceObject: {fileID: 3130332208514655391, guid: 53fd9b22e929d5d42a815a912e781af6, type: 3}
+  m_PrefabInstance: {fileID: 4446721191115168449}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &4446721191115168449
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -539,6 +575,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4446721192843702339, guid: 53fd9b22e929d5d42a815a912e781af6, type: 3}
+      propertyPath: axleInfos.Array.data[0].leftWheel
+      value: 
+      objectReference: {fileID: 402417587}
+    - target: {fileID: 4446721192843702339, guid: 53fd9b22e929d5d42a815a912e781af6, type: 3}
+      propertyPath: axleInfos.Array.data[0].rightWheel
+      value: 
+      objectReference: {fileID: 1812266531}
     - target: {fileID: 4446721192843702462, guid: 53fd9b22e929d5d42a815a912e781af6, type: 3}
       propertyPath: m_Name
       value: Robot

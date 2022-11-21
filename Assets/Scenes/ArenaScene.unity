@@ -135,6 +135,10 @@ PrefabInstance:
       value: Robot (with LEDs)
       objectReference: {fileID: 0}
     - target: {fileID: 4251142782105490108, guid: 84d8c4f69bdbe2642a57c00cb4425871, type: 3}
+      propertyPath: AxleInfos.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4251142782105490108, guid: 84d8c4f69bdbe2642a57c00cb4425871, type: 3}
       propertyPath: sensorTransforms.Array.size
       value: 1
       objectReference: {fileID: 0}
@@ -152,7 +156,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5959779734551600767, guid: 84d8c4f69bdbe2642a57c00cb4425871, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: 10.33
       objectReference: {fileID: 0}
     - target: {fileID: 5959779734551600767, guid: 84d8c4f69bdbe2642a57c00cb4425871, type: 3}
       propertyPath: m_LocalPosition.y
@@ -160,11 +164,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5959779734551600767, guid: 84d8c4f69bdbe2642a57c00cb4425871, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -8.9
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5959779734551600767, guid: 84d8c4f69bdbe2642a57c00cb4425871, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 1
+      value: 0.7071068
       objectReference: {fileID: 0}
     - target: {fileID: 5959779734551600767, guid: 84d8c4f69bdbe2642a57c00cb4425871, type: 3}
       propertyPath: m_LocalRotation.x
@@ -172,7 +176,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5959779734551600767, guid: 84d8c4f69bdbe2642a57c00cb4425871, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0
+      value: -0.7071068
       objectReference: {fileID: 0}
     - target: {fileID: 5959779734551600767, guid: 84d8c4f69bdbe2642a57c00cb4425871, type: 3}
       propertyPath: m_LocalRotation.z
@@ -184,7 +188,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5959779734551600767, guid: 84d8c4f69bdbe2642a57c00cb4425871, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
+      value: -90
       objectReference: {fileID: 0}
     - target: {fileID: 5959779734551600767, guid: 84d8c4f69bdbe2642a57c00cb4425871, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
@@ -192,6 +196,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 84d8c4f69bdbe2642a57c00cb4425871, type: 3}
+--- !u!4 &1067023225 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 5959779734551600767, guid: 84d8c4f69bdbe2642a57c00cb4425871, type: 3}
+  m_PrefabInstance: {fileID: 924331624}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1184509278
 GameObject:
   m_ObjectHideFlags: 0
@@ -297,6 +306,7 @@ GameObject:
   - component: {fileID: 1665878033}
   - component: {fileID: 1665878032}
   - component: {fileID: 1665878031}
+  - component: {fileID: 1665878034}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -362,14 +372,27 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1665878030}
-  m_LocalRotation: {x: 0.29734823, y: 0.5485731, z: -0.2173104, w: 0.7506183}
-  m_LocalPosition: {x: -38.7, y: 28.6, z: -9.7}
+  m_LocalRotation: {x: 0.39263508, y: -0.16952857, z: 0.07388416, w: 0.90091}
+  m_LocalPosition: {x: 12.209112, y: 13.735767, z: -13.697659}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 43.221, y: 72.321, z: 0}
+--- !u!114 &1665878034
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1665878030}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0b8fdc10ea5a1f74aa6fcc378d713890, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Target: {fileID: 1067023225}
 --- !u!4 &2079798337 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1820724785953105614, guid: 84d8c4f69bdbe2642a57c00cb4425871, type: 3}
