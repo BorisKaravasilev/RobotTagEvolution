@@ -7,27 +7,45 @@ public enum SensorValue {
     Nothing
 }
 
-public class SimpleLineAvoiding : MonoBehaviour
+public class AvoiderController : MonoBehaviour
 {
     // Public fields (exposed to inspector)
     public List<AxleInfo> axleInfos; // the information about each individual axle
     public float motorTorque;
     public List<Transform> sensorTransforms;
+    public bool Tagged = false;
+
+    [Header("LED Visualization")]
+    public Renderer LEDRenderer;
+    public Material AvoidingColor;
+    public Material TaggedColor;
+    public Material InSafeZoneColor;
 
     // Private fields
     private float leftMotorTorque = 0f; // <-- Update me to a value between 0.0f - 1.0f
     private float rightMotorTorque = 0f; // <-- me too (if you want more speed then increase "motorTorque" in the inspector
     private SensorValue[] sensorValues;
-    int layer_mask_perimeter;
-    int layer_mask_safeZone;
+    private int layer_mask_perimeter;
+    private int layer_mask_safeZone;
 
     /// <summary>
     /// Controller logic.
     /// </summary>
     private void RobotController()
     {
-        // Write your code here
-        // ...
+        // Setting LED colors
+        if (Tagged)
+        {
+            LEDRenderer.material = TaggedColor;
+        }
+        else if (sensorValues[0] == SensorValue.Nothing)
+        {
+            LEDRenderer.material = AvoidingColor;
+        }
+        else if (sensorValues[0] == SensorValue.SafeZone)
+        {
+            LEDRenderer.material = InSafeZoneColor;
+        }
 
         if (sensorValues[0] != SensorValue.Perimeter )
         {
@@ -47,6 +65,7 @@ public class SimpleLineAvoiding : MonoBehaviour
         sensorValues = new SensorValue[sensorTransforms.Count];
         layer_mask_perimeter = LayerMask.GetMask("Perimeter");
         layer_mask_safeZone = LayerMask.GetMask("SafeZone");
+        LEDRenderer.material = AvoidingColor;
     }
 
     // Executes every frame
@@ -73,6 +92,12 @@ public class SimpleLineAvoiding : MonoBehaviour
             {
                 axleInfo.leftWheel.motorTorque = leftMotorTorque * motorTorque;
                 axleInfo.rightWheel.motorTorque = rightMotorTorque * motorTorque;
+            }
+
+            if (Tagged)
+            {
+                axleInfo.leftWheel.motorTorque = 0f;
+                axleInfo.rightWheel.motorTorque = 0f;
             }
 
             ApplyLocalPositionToVisuals(axleInfo.leftWheel);
@@ -126,7 +151,6 @@ public class SimpleLineAvoiding : MonoBehaviour
                 Debug.DrawRay(sensorTransform.position, forwardEndPoint, Color.white);
                 sensorValues[i] = SensorValue.Nothing;
             }
-           
 
             i++;
         }
