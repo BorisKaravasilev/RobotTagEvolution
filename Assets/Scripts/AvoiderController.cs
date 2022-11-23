@@ -59,9 +59,12 @@ public class AvoiderController : MonoBehaviour
     private float BackLeftDistanceSensorValue;
     private float BackRightDistanceSensorValue;
 
+    
+    
+
     #endregion
-    
-    
+
+
     /// <summary>
     /// Controller logic.
     /// </summary>
@@ -107,6 +110,12 @@ public class AvoiderController : MonoBehaviour
             rightMotorTorque = 1f;
             print("Driving forward");
         }
+
+        if(LeftLeftDistanceSensorValue != 0f && LeftLeftDistanceSensorValue < 5f)
+        {
+            leftMotorTorque = 1f;
+            rightMotorTorque = 0.5f;
+        }
     }
 
     // Executes once in the beginning (good for initialization)
@@ -126,8 +135,9 @@ public class AvoiderController : MonoBehaviour
     public void FixedUpdate()
     {
         ReadLightSensors();
+        ReadDistance();
         RobotController();
-
+        
         foreach (AxleInfo axleInfo in AxleInfos)
         {
             // We steer by difference in motor speeds
@@ -203,8 +213,28 @@ public class AvoiderController : MonoBehaviour
         }
     }
 
-    private void ReadDistanceSensors()
-    {
-        // TODO: Balazs integrates his code here (feel free to take inspiration from the method above)
+    private void ReadDistance() {
+        float distanceLimit = 10;
+        LeftLeftDistanceSensorValue = ReadSensorDistance(LeftLeftDistanceSensor);
+        LeftDistanceSensorValue = ReadSensorDistance(LeftDistanceSensor);
+        MiddleDistanceSensorValue = ReadSensorDistance(MiddleDistanceSensor);
+        RightDistanceSensorValue = ReadSensorDistance(RightDistanceSensor);
+        RightRightDistanceSensorValue = ReadSensorDistance(RightRightDistanceSensor);
+        BackLeftDistanceSensorValue = ReadSensorDistance(BackLeftDistanceSensor);
+        BackRightDistanceSensorValue = ReadSensorDistance(BackRightDistanceSensor);
+
+        
+        float ReadSensorDistance(Transform sensorTransform)
+        {
+           
+            Ray ray = new Ray(sensorTransform.position, sensorTransform.forward);
+            Vector3 forwardEndPoint = sensorTransform.TransformDirection(Vector3.forward) * distanceLimit;
+            Debug.DrawRay(sensorTransform.position, forwardEndPoint, Color.green);
+            RaycastHit hitData;
+            Physics.Raycast(ray, out hitData, distanceLimit);
+            Debug.Log(hitData.distance);
+            return hitData.distance;
+           
+        }
     }
 }
