@@ -751,7 +751,7 @@ MonoBehaviour:
     rightWheel: {fileID: 6674358464676670041}
     motor: 1
     steering: 0
-  MotorTorque: 20
+  MotorTorque: 15
   Tagged: 0
   LeftLightSensor: {fileID: 7932437582505815929}
   RightLightSensor: {fileID: 2885147853945341832}

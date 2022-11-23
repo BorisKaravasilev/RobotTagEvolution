@@ -1,13 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-public enum LightSensorValue {
-    Perimeter,
-    SafeZone,
-    Nothing
-}
-
-public class AvoiderController : MonoBehaviour
+public abstract class Thymio : MonoBehaviour
 {
     #region Public fields (exposed to inspector)
     // ============================================ Public fields (exposed to inspector)
@@ -37,51 +31,60 @@ public class AvoiderController : MonoBehaviour
 
     #endregion
 
-    #region Private fields
-    // ============================================ Private fields
+    #region Protected fields (exposed to derived classes)
+    // ============================================ Protected fields (exposed to derived classes)
     
-    private float leftMotorTorque = 0f; // <-- Update me to a value between 0.0f - 1.0f
-    private float rightMotorTorque = 0f; // <-- me too (if you want more speed then increase "motorTorque" in the inspector
+    // Motor Values
+    protected float leftMotorTorque = 0f; // <-- Update me to a value between 0.0f - 1.0f
+    protected float rightMotorTorque = 0f; // <-- me too (if you want more speed then increase "motorTorque" in the inspector
 
-    private int layer_mask_perimeter;
-    private int layer_mask_safeZone;
-    
     // Sensor Values
-    private LightSensorValue leftLightSensorValue;  // on the bottom
-    private LightSensorValue rightLightSensorValue; // on the bottom
+    protected LightSensorValue leftLightSensorValue;  // on the bottom
+    protected LightSensorValue rightLightSensorValue; // on the bottom
     
-    private float LeftLeftDistanceSensorValue;
-    private float LeftDistanceSensorValue;
-    private float MiddleDistanceSensorValue;
-    private float RightDistanceSensorValue;
-    private float RightRightDistanceSensorValue;
+    protected float LeftLeftDistanceSensorValue;
+    protected float LeftDistanceSensorValue;
+    protected float MiddleDistanceSensorValue;
+    protected float RightDistanceSensorValue;
+    protected float RightRightDistanceSensorValue;
 
-    private float BackLeftDistanceSensorValue;
-    private float BackRightDistanceSensorValue;
+    protected float BackLeftDistanceSensorValue;
+    protected float BackRightDistanceSensorValue;
 
     #endregion
     
+    #region Private fields
+    // ============================================ Private fields
+    
+    private int layer_mask_perimeter;
+    private int layer_mask_safeZone;
+    
+    #endregion
+    
+    protected enum LightSensorValue {
+        Perimeter,
+        SafeZone,
+        Nothing
+    }
+
+    /// <summary>
+    /// Controller logic setting the torques of the motors based on sensor input.
+    /// </summary>
+    protected abstract void RobotController();
     
     /// <summary>
-    /// Controller logic.
+    /// Updates the color of LEDs based on sensor input.
     /// </summary>
-    private void RobotController()
-    {
-        // LED Color
-        if (Tagged)
-        {
-            LEDRenderer.material = TaggedColor;
-        }
-        else if (leftLightSensorValue == LightSensorValue.SafeZone && 
-                 rightLightSensorValue == LightSensorValue.SafeZone)
-        {
-            LEDRenderer.material = InSafeZoneColor;
-        }
-        else
-        {
-            LEDRenderer.material = AvoidingColor;
-        }
+    protected abstract void UpdateLEDColor();
 
+    /// <summary>
+    /// Handles avoiding of the edge of the arena.
+    /// </summary>
+    /// <returns>Returns true if the robot is on the edge of the arena.</returns>
+    protected bool AvoidPerimeter()
+    {
+        bool avoidingPerimeter = true;
+        
         // Motor Speeds
         if (leftLightSensorValue == LightSensorValue.Perimeter && 
             rightLightSensorValue == LightSensorValue.Perimeter)
@@ -89,24 +92,30 @@ public class AvoiderController : MonoBehaviour
             leftMotorTorque = -1f;
             rightMotorTorque = -1f;
         }
-        else if (leftLightSensorValue == LightSensorValue.Perimeter &&
-                   rightLightSensorValue != LightSensorValue.Perimeter)
+
+        if (leftLightSensorValue == LightSensorValue.Perimeter &&
+            rightLightSensorValue != LightSensorValue.Perimeter)
         {
             leftMotorTorque = 1f;
             rightMotorTorque = -1f;
         }
-        else if (leftLightSensorValue != LightSensorValue.Perimeter &&
-                   rightLightSensorValue == LightSensorValue.Perimeter)
+
+        if (leftLightSensorValue != LightSensorValue.Perimeter &&
+            rightLightSensorValue == LightSensorValue.Perimeter)
         {
             leftMotorTorque = -1f;
             rightMotorTorque = 1f;
         }
-        else
+
+        if (leftLightSensorValue != LightSensorValue.Perimeter &&
+            rightLightSensorValue != LightSensorValue.Perimeter)
         {
             leftMotorTorque = 1f;
             rightMotorTorque = 1f;
-            print("Driving forward");
+            avoidingPerimeter = false;
         }
+
+        return avoidingPerimeter;
     }
 
     // Executes once in the beginning (good for initialization)
@@ -127,7 +136,12 @@ public class AvoiderController : MonoBehaviour
     {
         ReadLightSensors();
         RobotController();
+        UpdateLEDColor();
+        ApplyTorqueToMotors();
+    }
 
+    private void ApplyTorqueToMotors()
+    {
         foreach (AxleInfo axleInfo in AxleInfos)
         {
             // We steer by difference in motor speeds
@@ -156,7 +170,7 @@ public class AvoiderController : MonoBehaviour
 
     // finds the corresponding visual wheel
     // correctly applies the transform
-    public void ApplyLocalPositionToVisuals(WheelCollider collider)
+    private void ApplyLocalPositionToVisuals(WheelCollider collider)
     {
         if (collider.transform.childCount == 0)
         {
@@ -177,8 +191,6 @@ public class AvoiderController : MonoBehaviour
     {
         leftLightSensorValue = ReadSensor(LeftLightSensor);
         rightLightSensorValue = ReadSensor(RightLightSensor);
-        
-        print(leftLightSensorValue);
 
         // Local function (function in a function)
         LightSensorValue ReadSensor(Transform sensorTransform)
