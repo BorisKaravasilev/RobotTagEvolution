@@ -5,11 +5,17 @@ public abstract class Thymio : MonoBehaviour
 {
     #region Public fields (exposed to inspector)
     // ============================================ Public fields (exposed to inspector)
+
+    public bool ShowDebugVisuals = true;
+    public bool Tagged = false;
     
+    public float RaspberryPiCameraFOV = 62f; // field of view in degrees
+    public Transform RaspberryPiCamera;
+    
+    [Header("Motors")]
     public List<AxleInfo> AxleInfos; // the information about each individual axle
     public float MotorTorque;
-    public bool Tagged = false;
-
+    
     [Header("Sensor Transforms")]
     public Transform LeftLightSensor;  // on the bottom
     public Transform RightLightSensor; // on the bottom
@@ -77,6 +83,47 @@ public abstract class Thymio : MonoBehaviour
     /// </summary>
     protected abstract void UpdateLEDColor();
 
+    // Executes once in the beginning (good for initialization)
+    public void Start()
+    {
+        layer_mask_perimeter = LayerMask.GetMask("Perimeter");
+        layer_mask_safeZone = LayerMask.GetMask("SafeZone");
+        LEDRenderer.material = AvoidingColor;
+    }
+
+    // Executes every frame
+    public void Update()
+    {
+        ShowFieldOfView();
+    }
+
+    // Executes over a fixed period of time (good for physics calculations)
+    public void FixedUpdate()
+    {
+        ReadLightSensors();
+        RobotController();
+        UpdateLEDColor();
+        ApplyTorqueToMotors();
+    }
+
+    /// <summary>
+    /// Visualizes the field of view if "ShowDebugVisuals" is enabled.
+    /// </summary>
+    private void ShowFieldOfView()
+    {
+        if (ShowDebugVisuals)
+        {
+            float cameraRange = 10; // in meters
+            Vector3 leftFOVLimit = RaspberryPiCamera.TransformDirection(Vector3.forward) * cameraRange;
+            leftFOVLimit = Quaternion.Euler(0, -RaspberryPiCameraFOV / 2f, 0) * leftFOVLimit;
+            Debug.DrawRay(RaspberryPiCamera.position, leftFOVLimit, Color.white);
+            
+            Vector3 rightFOVLimit = RaspberryPiCamera.TransformDirection(Vector3.forward) * cameraRange;
+            rightFOVLimit = Quaternion.Euler(0, RaspberryPiCameraFOV / 2f, 0) * rightFOVLimit;
+            Debug.DrawRay(RaspberryPiCamera.position, rightFOVLimit, Color.white);
+        }
+    }
+    
     /// <summary>
     /// Handles avoiding of the edge of the arena.
     /// </summary>
@@ -116,28 +163,6 @@ public abstract class Thymio : MonoBehaviour
         }
 
         return avoidingPerimeter;
-    }
-
-    // Executes once in the beginning (good for initialization)
-    public void Start()
-    {
-        layer_mask_perimeter = LayerMask.GetMask("Perimeter");
-        layer_mask_safeZone = LayerMask.GetMask("SafeZone");
-        LEDRenderer.material = AvoidingColor;
-    }
-
-    // Executes every frame
-    public void Update()
-    {
-    }
-
-    // Executes over a fixed period of time (good for physics calculations)
-    public void FixedUpdate()
-    {
-        ReadLightSensors();
-        RobotController();
-        UpdateLEDColor();
-        ApplyTorqueToMotors();
     }
 
     private void ApplyTorqueToMotors()
@@ -200,17 +225,17 @@ public abstract class Thymio : MonoBehaviour
 
             if (Physics.Raycast(sensorTransform.position, fwd, 5, layer_mask_perimeter))
             {
-                Debug.DrawRay(sensorTransform.position, forwardEndPoint, Color.red);
+                if (ShowDebugVisuals) Debug.DrawRay(sensorTransform.position, forwardEndPoint, Color.red);
                 return LightSensorValue.Perimeter;
             }
             
             if (Physics.Raycast(sensorTransform.position, fwd, 5, layer_mask_safeZone))
             {
-                Debug.DrawRay(sensorTransform.position, forwardEndPoint, Color.green);
+                if (ShowDebugVisuals) Debug.DrawRay(sensorTransform.position, forwardEndPoint, Color.green);
                 return LightSensorValue.SafeZone;
             }
 
-            Debug.DrawRay(sensorTransform.position, forwardEndPoint, Color.white);
+            if (ShowDebugVisuals) Debug.DrawRay(sensorTransform.position, forwardEndPoint, Color.white);
             return LightSensorValue.Nothing;
         }
     }
