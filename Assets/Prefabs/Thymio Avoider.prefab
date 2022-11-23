@@ -690,7 +690,7 @@ GameObject:
   - component: {fileID: 2519068182771490041}
   - component: {fileID: 4251142782105490108}
   m_Layer: 0
-  m_Name: Thymio
+  m_Name: Thymio Avoider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -749,13 +749,14 @@ MonoBehaviour:
   ShowDebugVisuals: 1
   Tagged: 0
   RaspberryPiCameraFOV: 62
+  cameraRange: 20
   RaspberryPiCamera: {fileID: 8828796848400431007}
   AxleInfos:
   - leftWheel: {fileID: 9043654888449647678}
     rightWheel: {fileID: 6674358464676670041}
     motor: 1
     steering: 0
-  MotorTorque: 15
+  MotorTorque: 8
   LeftLightSensor: {fileID: 7932437582505815929}
   RightLightSensor: {fileID: 2885147853945341832}
   LeftLeftDistanceSensor: {fileID: 4081339046426148080}

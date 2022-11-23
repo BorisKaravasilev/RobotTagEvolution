@@ -10,6 +10,7 @@ public abstract class Thymio : MonoBehaviour
     public bool Tagged = false;
     
     public float RaspberryPiCameraFOV = 62f; // field of view in degrees
+    public float cameraRange = 14; // in meters
     public Transform RaspberryPiCamera;
     
     [Header("Motors")]
@@ -57,6 +58,8 @@ public abstract class Thymio : MonoBehaviour
     protected float BackLeftDistanceSensorValue;
     protected float BackRightDistanceSensorValue;
 
+    protected List<Thymio> RobotsInFOV = new List<Thymio>();
+
     #endregion
     
     #region Private fields
@@ -64,7 +67,8 @@ public abstract class Thymio : MonoBehaviour
     
     private int layer_mask_perimeter;
     private int layer_mask_safeZone;
-    
+    private Thymio[] robotsInArena;
+
     #endregion
     
     protected enum LightSensorValue {
@@ -83,12 +87,18 @@ public abstract class Thymio : MonoBehaviour
     /// </summary>
     protected abstract void UpdateLEDColor();
 
+    public void SetRobotsInArena(Thymio[] robotsInArena)
+    {
+        this.robotsInArena = robotsInArena;
+    }
+
     // Executes once in the beginning (good for initialization)
     public void Start()
     {
         layer_mask_perimeter = LayerMask.GetMask("Perimeter");
         layer_mask_safeZone = LayerMask.GetMask("SafeZone");
         LEDRenderer.material = AvoidingColor;
+        robotsInArena = FindObjectsOfType<Thymio>();
     }
 
     // Executes every frame
@@ -101,9 +111,35 @@ public abstract class Thymio : MonoBehaviour
     public void FixedUpdate()
     {
         ReadLightSensors();
+        GetRobotPositionsFromCamera();
         RobotController();
         UpdateLEDColor();
         ApplyTorqueToMotors();
+    }
+    
+    private void GetRobotPositionsFromCamera()
+    {
+        RobotsInFOV.Clear();
+        
+        foreach (Thymio robot in robotsInArena)
+        {
+            if (!robot.enabled || robot == this) continue; // Early out if game object is disabled or itself (disabled != robot is tagged)
+
+            Vector3 robotPosition = robot.transform.position;
+            robotPosition.y = RaspberryPiCamera.position.y; // Pretend that the robot is in the height of the camera
+
+            Vector3 vectorToRobot = robotPosition - RaspberryPiCamera.position;
+            
+            float angleFromCenter = Vector3.Angle(RaspberryPiCamera.forward, vectorToRobot);
+            float halfFOVAngle = RaspberryPiCameraFOV / 2f;
+            bool robotInFOV = angleFromCenter <= halfFOVAngle && vectorToRobot.magnitude <= cameraRange;
+            
+            if (robotInFOV && ShowDebugVisuals)
+            {
+                Debug.DrawLine(RaspberryPiCamera.position, robotPosition, robot.LEDRenderer.material.color);
+                RobotsInFOV.Add(robot);
+            }
+        }
     }
 
     /// <summary>
@@ -113,7 +149,6 @@ public abstract class Thymio : MonoBehaviour
     {
         if (ShowDebugVisuals)
         {
-            float cameraRange = 10; // in meters
             Vector3 leftFOVLimit = RaspberryPiCamera.TransformDirection(Vector3.forward) * cameraRange;
             leftFOVLimit = Quaternion.Euler(0, -RaspberryPiCameraFOV / 2f, 0) * leftFOVLimit;
             Debug.DrawRay(RaspberryPiCamera.position, leftFOVLimit, Color.white);
@@ -221,7 +256,7 @@ public abstract class Thymio : MonoBehaviour
         LightSensorValue ReadSensor(Transform sensorTransform)
         {
             Vector3 fwd = sensorTransform.TransformDirection(Vector3.forward);
-            Vector3 forwardEndPoint = sensorTransform.TransformDirection(Vector3.forward) * 10;
+            Vector3 forwardEndPoint = sensorTransform.TransformDirection(Vector3.forward) * 3;
 
             if (Physics.Raycast(sensorTransform.position, fwd, 5, layer_mask_perimeter))
             {
