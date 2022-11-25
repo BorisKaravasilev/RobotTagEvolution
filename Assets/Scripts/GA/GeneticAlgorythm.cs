@@ -15,7 +15,8 @@ namespace Assets.Scripts.GA
         Individual specimen1;
         Individual specimen2;
         double mutationProbability = 0.1;
-        double mutationRate = 0.1;
+        double maxMutationRate = 0.1;
+        
         List<Individual> offSprings = new List<Individual>();
 
 
@@ -69,7 +70,7 @@ namespace Assets.Scripts.GA
             //Select a random crossover point
             int crossOverPoint = rn.Next(population.getIndividuals()[0].getChromosomeLength());
 
-            //Swap values among parents
+            //Swap values
             for (int i = 0; i < crossOverPoint; i++)
             {
 
@@ -95,12 +96,16 @@ namespace Assets.Scripts.GA
                 {
                     //Select a random mutation point for specimen 1
                     int mutationPoint = rn.Next(population.getIndividuals()[0].getChromosomeLength());
+                    //Define mutation rate
+                    double mutationRate = (rn.NextDouble() * (2 * maxMutationRate)) - maxMutationRate;
                     //Mutate gene
                     specimen1.getChromosome()[mutationPoint] += mutationRate;
 
                 }
             }
         }
+
+   
 
         void populateOffSpingsList()
         {
