@@ -65,9 +65,10 @@ public abstract class Thymio : MonoBehaviour
     #region Private fields
     // ============================================ Private fields
     
-    private int layer_mask_perimeter;
-    private int layer_mask_safeZone;
-    private Thymio[] robotsInArena;
+    private int _layerMaskPerimeter;
+    private int _layerMaskSafeZone;
+    private Thymio[] _robotsInArena;
+    private double _fitness;
 
     #endregion
     
@@ -87,18 +88,35 @@ public abstract class Thymio : MonoBehaviour
     /// </summary>
     protected abstract void UpdateLEDColor();
 
+    /// <summary>
+    /// Increments the fitness of the individual with the specified amount (1.0 by default).
+    /// </summary>
+    /// <param name="amount"></param>
+    protected void IncrementFitness(double amount = 1.0)
+    {
+        _fitness += amount;
+    }
+
+    /// <summary>
+    /// Returns the fitness of the individual.
+    /// </summary>
+    protected double GetFitness()
+    {
+        return _fitness;
+    }
+
     public void SetRobotsInArena(Thymio[] robotsInArena)
     {
-        this.robotsInArena = robotsInArena;
+        this._robotsInArena = robotsInArena;
     }
 
     // Executes once in the beginning (good for initialization)
     public void Start()
     {
-        layer_mask_perimeter = LayerMask.GetMask("Perimeter");
-        layer_mask_safeZone = LayerMask.GetMask("SafeZone");
+        _layerMaskPerimeter = LayerMask.GetMask("Perimeter");
+        _layerMaskSafeZone = LayerMask.GetMask("SafeZone");
         LEDRenderer.material = AvoidingColor;
-        robotsInArena = FindObjectsOfType<Thymio>();
+        _robotsInArena = FindObjectsOfType<Thymio>();
     }
 
     // Executes every frame
@@ -121,7 +139,7 @@ public abstract class Thymio : MonoBehaviour
     {
         RobotsInFOV.Clear();
         
-        foreach (Thymio robot in robotsInArena)
+        foreach (Thymio robot in _robotsInArena)
         {
             if (!robot.enabled || robot == this) continue; // Early out if game object is disabled or itself (disabled != robot is tagged)
 
@@ -258,13 +276,13 @@ public abstract class Thymio : MonoBehaviour
             Vector3 fwd = sensorTransform.TransformDirection(Vector3.forward);
             Vector3 forwardEndPoint = sensorTransform.TransformDirection(Vector3.forward) * 3;
 
-            if (Physics.Raycast(sensorTransform.position, fwd, 5, layer_mask_perimeter))
+            if (Physics.Raycast(sensorTransform.position, fwd, 5, _layerMaskPerimeter))
             {
                 if (ShowDebugVisuals) Debug.DrawRay(sensorTransform.position, forwardEndPoint, Color.red);
                 return LightSensorValue.Perimeter;
             }
             
-            if (Physics.Raycast(sensorTransform.position, fwd, 5, layer_mask_safeZone))
+            if (Physics.Raycast(sensorTransform.position, fwd, 5, _layerMaskSafeZone))
             {
                 if (ShowDebugVisuals) Debug.DrawRay(sensorTransform.position, forwardEndPoint, Color.green);
                 return LightSensorValue.SafeZone;
