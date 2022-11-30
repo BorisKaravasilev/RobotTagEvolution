@@ -7,92 +7,90 @@ using static Unity.VisualScripting.LudiqRootObjectEditor;
 using Unity.VisualScripting;
 using System.Collections.Generic;
 
-namespace Assets.Scripts.GA
+
+public class Population
+
+
 {
-    public class Population
-
-
-    {
-        int popSize = 10;
-        int fittestIndex = 0;
-        Individual[] individuals;
-        //Individual[] rouletteList;
-        List<Individual> rouletteList = new List<Individual>();
+    int popSize = 10;
+    int fittestIndex = 0;
+    Individual[] individuals;
+    //Individual[] rouletteList;
+    List<Individual> rouletteList = new List<Individual>();
         
 
-        public void initPop(int popSize)
+    public void initPop(int popSize)
                     
+    {
+        this.popSize = popSize;
+        this.individuals = new Individual[popSize];
+        for (int i = 0; i < individuals.Length; i++)
         {
-            this.popSize = popSize;
-            this.individuals = new Individual[popSize];
-            for (int i = 0; i < individuals.Length; i++)
-            {
-                individuals[i] = new Individual();
-            }
+            individuals[i] = new Individual();
         }
+    }
 
-        //Get the fittest individual within the population
+    //Get the fittest individual within the population
 
-        public Individual getFittest()
+    public Individual getFittest()
 
+    {
+        int maxFit = 0;
+            for( int i = 0; i < individuals.Length; i ++ )
         {
-            int maxFit = 0;
-             for( int i = 0; i < individuals.Length; i ++ )
+            if (maxFit < individuals[i].getFitness())
             {
-                if (maxFit < individuals[i].getFitness())
-                {
-                    maxFit = individuals[i].getFitness();
-                    fittestIndex = i;
-                }
+                maxFit = individuals[i].getFitness();
+                fittestIndex = i;
+            }
                 
-            }
-             return individuals[fittestIndex];
-
-
         }
-
-        public int getFittestIndex()
-        {
-            return fittestIndex;
-        }
-
-        //Calculate fitness of each individual
-        public void calculateFitness()
-        {
-
-            for (int i = 0; i < individuals.Length; i++)
-            {
-                individuals[i].calcFitness();
-            }
-            getFittest();
-        }
-
-        void populateRouletteList()
-        {
-            foreach (Individual individual in individuals){
-                
-                for (int j = 0; j < individual.getFitness(); j++)
-                {
-                    rouletteList.Add(individual);
-
-                }
-
-            }
-        }
-
-        public List<Individual> getRouletteList()
-        {
-            return rouletteList;
-        }
-
-        public Individual[] getIndividuals()
-        {
-            return individuals;
-        }
-
-
-
+            return individuals[fittestIndex];
 
 
     }
+
+    public int getFittestIndex()
+    {
+        return fittestIndex;
+    }
+
+    //Calculate fitness of each individual
+    public void calculateFitness()
+    {
+
+        for (int i = 0; i < individuals.Length; i++)
+        {
+            individuals[i].calcFitness();
+        }
+        getFittest();
+    }
+
+    void populateRouletteList()
+    {
+        foreach (Individual individual in individuals){
+                
+            for (int j = 0; j < individual.getFitness(); j++)
+            {
+                rouletteList.Add(individual);
+
+            }
+
+        }
+    }
+
+    public List<Individual> getRouletteList()
+    {
+        return rouletteList;
+    }
+
+    public Individual[] getIndividuals()
+    {
+        return individuals;
+    }
+
+
+
+
+
 }
