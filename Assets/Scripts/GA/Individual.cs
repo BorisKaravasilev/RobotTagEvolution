@@ -3,54 +3,52 @@ using UnityEngine;
 using System;
 
 
-namespace Assets.Scripts
+
+public class Individual
 {
-    public class Individual
+    int fitness = 0;
+    double [] chromosome = new double[14];
+    int chromosomeLength = 14;
+
+    public Individual()
     {
-        int fitness = 0;
-        double [] chromosome = new double[14];
-        int chromosomeLength = 14;
+        System.Random rnd = new System.Random();
 
-        public Individual()
+        for(int j = 0; j < chromosomeLength; j++)
         {
-            System.Random rnd = new System.Random();
-
-            for(int j = 0; j < chromosomeLength; j++)
-            {
-                chromosome[j] = rnd.NextDouble();
-            }
-
-            fitness = 0;
+            chromosome[j] = rnd.NextDouble();
         }
 
-        //Calc fitness
+        fitness = 0;
+    }
 
-        public void calcFitness()
-        {
+    //Calc fitness
 
-            // TODO - it has to come from unity Thymio.getFittness
+    public void calcFitness()
+    {
+
+        // TODO - it has to come from unity Thymio.getFittness
             
 
 
-        }
-
-        public int getFitness()
-        {
-            return fitness;
-        }
-
-        public int getChromosomeLength()
-        {
-            return chromosomeLength;
-        }
-
-        public double[] getChromosome()
-        {
-            return chromosome;
-        }
-
-
-
-
     }
+
+    public int getFitness()
+    {
+        return fitness;
+    }
+
+    public int getChromosomeLength()
+    {
+        return chromosomeLength;
+    }
+
+    public double[] getChromosome()
+    {
+        return chromosome;
+    }
+
+
+
+
 }

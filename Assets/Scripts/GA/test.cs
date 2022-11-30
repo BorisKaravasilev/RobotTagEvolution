@@ -2,8 +2,7 @@
 using System.Collections;
 using UnityEngine;
 
-namespace Assets.Scripts.GA
-{
+
     public class test : MonoBehaviour
     {
 
@@ -19,12 +18,12 @@ namespace Assets.Scripts.GA
 
         }
     }
-}
+
 
 public class GeneticAlgorythm : MonoBehaviour
 {
     Population population = new Population();
-    Individual fittest;
+    Individual fittest;   
     int generationCount;
     int popSize = 10;
 

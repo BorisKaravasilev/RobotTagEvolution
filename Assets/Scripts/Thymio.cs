@@ -35,6 +35,7 @@ public abstract class Thymio : MonoBehaviour
     public Material AvoidingColor;
     public Material TaggedColor;
     public Material InSafeZoneColor;
+    public Material SeekingColor;
 
     #endregion
 
@@ -293,8 +294,30 @@ public abstract class Thymio : MonoBehaviour
         }
     }
 
-    private void ReadDistanceSensors()
+    private void ReadDistance()
     {
-        // TODO: Balazs integrates his code here (feel free to take inspiration from the method above)
+        float distanceLimit = 10;
+        LeftLeftDistanceSensorValue = ReadSensorDistance(LeftLeftDistanceSensor);
+        LeftDistanceSensorValue = ReadSensorDistance(LeftDistanceSensor);
+        MiddleDistanceSensorValue = ReadSensorDistance(MiddleDistanceSensor);
+        RightDistanceSensorValue = ReadSensorDistance(RightDistanceSensor);
+        RightRightDistanceSensorValue = ReadSensorDistance(RightRightDistanceSensor);
+        BackLeftDistanceSensorValue = ReadSensorDistance(BackLeftDistanceSensor);
+        BackRightDistanceSensorValue = ReadSensorDistance(BackRightDistanceSensor);
+
+
+        float ReadSensorDistance(Transform sensorTransform)
+        {
+
+            Ray ray = new Ray(sensorTransform.position, sensorTransform.forward);
+            Vector3 forwardEndPoint = sensorTransform.TransformDirection(Vector3.forward) * distanceLimit;
+            Debug.DrawRay(sensorTransform.position, forwardEndPoint, Color.green);
+            RaycastHit hitData;
+            Physics.Raycast(ray, out hitData, distanceLimit);
+            Debug.Log(hitData.distance);
+            return hitData.distance;
+
+        }
     }
+
 }

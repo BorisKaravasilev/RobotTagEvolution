@@ -7,6 +7,18 @@
 
     protected override void UpdateLEDColor()
     {
-        throw new System.NotImplementedException();
+
+        if (leftLightSensorValue == LightSensorValue.SafeZone &&
+                 rightLightSensorValue == LightSensorValue.SafeZone)
+        {
+            LEDRenderer.material = InSafeZoneColor;
+        }
+        else
+        {
+            LEDRenderer.material = SeekingColor;
+        }
     }
+
+
+
 }
