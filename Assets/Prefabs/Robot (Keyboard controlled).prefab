@@ -708,7 +708,7 @@ GameObject:
   - component: {fileID: 4446721192843702336}
   - component: {fileID: 4446721192843702339}
   m_Layer: 0
-  m_Name: Thymio (Keyboard controlled)
+  m_Name: Robot (Keyboard controlled)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

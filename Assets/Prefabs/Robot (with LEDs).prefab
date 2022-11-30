@@ -32,7 +32,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 5959779734551600767}
-  m_RootOrder: 2
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &4870343587236564279
 MeshFilter:
@@ -414,7 +414,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 5959779734551600767}
-  m_RootOrder: 1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
 --- !u!1 &2799526547395758686
 GameObject:
@@ -511,7 +511,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 5959779734551600767}
-  m_RootOrder: 0
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &7453322415711159537
 MeshFilter:
@@ -690,7 +690,7 @@ GameObject:
   - component: {fileID: 2519068182771490041}
   - component: {fileID: 4251142782105490108}
   m_Layer: 0
-  m_Name: Thymio Avoider
+  m_Name: Robot (with LEDs)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -708,11 +708,11 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 8828796848400431007}
   - {fileID: 1820724785953105614}
   - {fileID: 2057772409482143187}
   - {fileID: 8050745714077216684}
   - {fileID: 8309134473828669788}
+  - {fileID: 8828796848400431007}
   - {fileID: 8965805169757035597}
   - {fileID: 6546088719858968758}
   m_Father: {fileID: 0}
@@ -746,17 +746,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d563b8d63cc633e40bd7cd87ba63a7b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ShowDebugVisuals: 1
-  Tagged: 0
-  RaspberryPiCameraFOV: 62
-  cameraRange: 20
-  RaspberryPiCamera: {fileID: 8828796848400431007}
   AxleInfos:
   - leftWheel: {fileID: 9043654888449647678}
     rightWheel: {fileID: 6674358464676670041}
     motor: 1
     steering: 0
-  MotorTorque: 8
+  MotorTorque: 20
+  Tagged: 0
   LeftLightSensor: {fileID: 7932437582505815929}
   RightLightSensor: {fileID: 2885147853945341832}
   LeftLeftDistanceSensor: {fileID: 4081339046426148080}
@@ -832,7 +828,7 @@ Transform:
   - {fileID: 8424195920220646966}
   - {fileID: 3683573325017385996}
   m_Father: {fileID: 5959779734551600767}
-  m_RootOrder: 4
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &6074835915613532680
 GameObject:
@@ -1170,7 +1166,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 5959779734551600767}
-  m_RootOrder: 3
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &1548406432584011130
 MeshFilter:
