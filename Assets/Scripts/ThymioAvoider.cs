@@ -6,6 +6,8 @@ public class ThymioAvoider : Thymio
     protected override void RobotController()
     {
         AvoidPerimeter();
+        updateFitness();
+        
     }
 
     protected override void UpdateLEDColor()
@@ -23,5 +25,17 @@ public class ThymioAvoider : Thymio
         {
             LEDRenderer.material = AvoidingColor;
         }
+    }
+
+    public override void updateFitness()
+    {
+         if (!Tagged)
+
+        {
+            IncrementFitness(Time.deltaTime);
+        }
+      
+        
+        
     }
 }
