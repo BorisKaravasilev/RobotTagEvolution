@@ -222,7 +222,7 @@ public abstract class Thymio : MonoBehaviour
     {
         foreach (AxleInfo axleInfo in AxleInfos)
         {
-            // We steer by difference in motor speeds
+            // We steer by difference in motor speeds therefore we don't need a steering axel
 
             //if (axleInfo.steering)
             //{

@@ -2,6 +2,7 @@
 using MathNet.Numerics.Distributions;
 using MathNet.Numerics.LinearAlgebra;
 using MathNet.Numerics.LinearAlgebra.Double;
+using UnityEngine;
 
 public enum ActivationFunction
 {
@@ -24,7 +25,14 @@ public class NeuralNetwork
     {
         _neuronsInLayer = neuronsInLayer;
         SetActivationFunctions(ActivationFunction.None, ActivationFunction.Sigmoid);
-        InitializeWeightsAndBiasesRandomly();
+        InitializeWeightsAndBiasesToZero();
+    }
+    
+    public NeuralNetwork(int[] neuronsInLayer, double[][,] weightsAndBiasesMatrixes)
+    {
+        _neuronsInLayer = neuronsInLayer;
+        SetActivationFunctions(ActivationFunction.None, ActivationFunction.Sigmoid);
+        SetWeightsAndBiasesFromMatrixes(weightsAndBiasesMatrixes);
     }
 
     public void SetActivationFunctions(ActivationFunction hiddenLayers, ActivationFunction outputLayer)
@@ -55,7 +63,33 @@ public class NeuralNetwork
             int neuronsInNextLayer = _neuronsInLayer[i + 1]; // matrix height
 
             var M = Matrix<double>.Build;
-            _weightsAndBiasesInLayer[i] = M.Random(neuronsInLayer + 1, neuronsInNextLayer, new Normal(mean, standardDeviation));
+            _weightsAndBiasesInLayer[i] = M.Random(neuronsInNextLayer, neuronsInLayer + 1, new Normal(mean, standardDeviation));
+        }
+    }
+    
+    public void InitializeWeightsAndBiasesToZero()
+    {
+        int numberOfLayers = _neuronsInLayer.Length;
+        _weightsAndBiasesInLayer = new Matrix<double>[numberOfLayers - 1];
+
+        for (int i = 0; i < numberOfLayers - 1; i++) // -1 because the output layer is not connected to any other 
+        {
+            int neuronsInLayer = _neuronsInLayer[i]; // matrix width - 1
+            int neuronsInNextLayer = _neuronsInLayer[i + 1]; // matrix height
+
+            var M = Matrix<double>.Build;
+            _weightsAndBiasesInLayer[i] = M.Dense(neuronsInNextLayer, neuronsInLayer + 1);
+        }
+    }
+
+    public void SetWeightsAndBiasesFromMatrixes(double[][,] weightsAndBiasesMatrixes)
+    {
+        int numberOfLayers = _neuronsInLayer.Length;
+        _weightsAndBiasesInLayer = new Matrix<double>[numberOfLayers - 1];
+        
+        for (int i = 0; i < numberOfLayers - 1; i++) // -1 because the output layer is not connected to any other 
+        {
+            _weightsAndBiasesInLayer[i] = Matrix<double>.Build.DenseOfArray(weightsAndBiasesMatrixes[i]);
         }
     }
 
@@ -82,8 +116,38 @@ public class NeuralNetwork
         }
     }
 
-    public void ComputeOutput(Vector<double> input)
+    public Vector<double> ComputeOutput(Vector<double> input)
     {
-        // TODO: Multiply matrix by vector + apply activation function to propagate values to next layer
+        Vector<double> propagatedInput = input;
+        int i = 0;
+        
+        foreach (Matrix<double> weightsAndBiasesMatrix in _weightsAndBiasesInLayer)
+        {
+            i++;
+            var inputsWithOneForBiases = new double[propagatedInput.Count + 1];
+            propagatedInput.ToArray().CopyTo(inputsWithOneForBiases, 1);
+            var vectorWithOneForBiases = Vector<double>.Build.DenseOfArray(inputsWithOneForBiases);
+            propagatedInput = weightsAndBiasesMatrix.Multiply(vectorWithOneForBiases);
+
+            var toApplyActivationFunction = propagatedInput.ToArray();
+
+            for (int j = 0; j < toApplyActivationFunction.Length; j++)
+            {
+                toApplyActivationFunction[j] = Sigmoid(toApplyActivationFunction[j]);
+            }
+
+            propagatedInput = Vector<double>.Build.DenseOfArray(toApplyActivationFunction);
+        }
+
+        return propagatedInput;
+    }
+
+    public Matrix<double>[] GetWeightsAndBiasesInLayer()
+    {
+        return _weightsAndBiasesInLayer;
+    }
+    
+    public static double Sigmoid(double value) {
+        return 1.0f / (1.0 + (double) Math.Exp(-value));
     }
 }
