@@ -9,9 +9,16 @@ public class Individual
     int fitness = 0;
     double [] chromosome = new double[14];
     int chromosomeLength = 14;
+    public GameObject prefabInstance;
 
-    public Individual()
+
+
+    public Individual(GameObject prefab, Vector3 spawnPos)
     {
+        this.prefabInstance = GameObject.Instantiate(prefab);
+        this.prefabInstance.transform.position = spawnPos;
+
+
         System.Random rnd = new System.Random();
 
         for(int j = 0; j < chromosomeLength; j++)
@@ -19,23 +26,14 @@ public class Individual
             chromosome[j] = rnd.NextDouble();
         }
 
+
+
         fitness = 0;
     }
-
-    //Calc fitness
-
-    public void calcFitness()
+    
+    public double getFitness()
     {
-
-        // TODO - it has to come from unity Thymio.getFittness
-            
-
-
-    }
-
-    public int getFitness()
-    {
-        return fitness;
+        return prefabInstance.GetComponent<ThymioAvoider>().GetFitness();
     }
 
     public int getChromosomeLength()

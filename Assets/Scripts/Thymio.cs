@@ -108,7 +108,7 @@ public abstract class Thymio : MonoBehaviour
     /// <summary>
     /// Returns the fitness of the individual.
     /// </summary>
-    protected double GetFitness()
+    public double GetFitness()
     {
         return _fitness;
     }
@@ -330,10 +330,10 @@ public abstract class Thymio : MonoBehaviour
     }
 
     public abstract void updateFitness();
-
-    public List<Thymio> getRobotsInFOV()
+    
+    public double getFitness()
     {
-        return RobotsInFOV;
+        return _fitness;
     }
 
 
