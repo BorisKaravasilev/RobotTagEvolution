@@ -191,8 +191,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   GenerationLifespan: 20
   prefab: {fileID: 4199367626649424487, guid: 84d8c4f69bdbe2642a57c00cb4425871, type: 3}
-  mutationProbability: 0.1
-  maxMutationRate: 0.3
+  mutationProbability: 0.05
+  maxMutationRate: 0.1
 --- !u!4 &378016662
 Transform:
   m_ObjectHideFlags: 0

@@ -158,8 +158,14 @@ public class Population
         fitnessOverview += "    Total Fitness:" + totalFitness.ToString();
         Debug.Log(fitnessOverview);
         
-        //offSprings.Add(getFittest());
-        for (int i = 0; i < popSize; i++)
+        // var fittestOffSpring = getFittest();
+        // Individual offSpringToAdd = new Individual(fittestOffSpring.getChromosome(), fittestOffSpring.prefabInstance);
+        // offSprings.Add(offSpringToAdd);
+        //     
+        // offSpringToAdd.prefabInstance.GetComponent<Thymio>().Respawn();
+        
+        
+        for (int i = 0; i < popSize - 1; i++)
         {
             double[] offspringChromosome = Crossover();
             Individual offspring = new Individual(offspringChromosome, individuals[i].prefabInstance);
