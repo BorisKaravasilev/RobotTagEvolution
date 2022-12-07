@@ -48,13 +48,14 @@ public class ThymioAvoider : Thymio
 
     public override void updateFitness()
     {
-        if (!Tagged)
+        if (!Tagged || !(leftLightSensorValue == LightSensorValue.Perimeter && rightLightSensorValue == LightSensorValue.Perimeter))
         {
-            if (leftLightSensorValue == LightSensorValue.Perimeter && rightLightSensorValue == LightSensorValue.Perimeter)
+            if (leftLightSensorValue == LightSensorValue.SafeZone && rightLightSensorValue == LightSensorValue.SafeZone)
             {
                 IncrementFitness(Time.deltaTime * 9);
             }
-            IncrementFitness(Time.deltaTime);
+            
+            IncrementFitness(Time.deltaTime * (leftMotorTorque + rightMotorTorque));
         }
     }
 }

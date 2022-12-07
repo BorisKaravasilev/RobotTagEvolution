@@ -152,7 +152,7 @@ public class Population
         {
             double fitness = individual.getFitness();
             totalFitness += fitness;
-            fitnessOverview += fitness.ToString() + ", ";
+            // fitnessOverview += fitness.ToString() + ", ";
         }
 
         fitnessOverview += "    Total Fitness:" + totalFitness.ToString();

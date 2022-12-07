@@ -189,10 +189,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 09123897e641aac4da76fae3d40432b8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GenerationLifespan: 10
+  GenerationLifespan: 20
   prefab: {fileID: 4199367626649424487, guid: 84d8c4f69bdbe2642a57c00cb4425871, type: 3}
-  mutationProbability: 0.05
-  maxMutationRate: 0.1
+  mutationProbability: 0.1
+  maxMutationRate: 0.3
 --- !u!4 &378016662
 Transform:
   m_ObjectHideFlags: 0

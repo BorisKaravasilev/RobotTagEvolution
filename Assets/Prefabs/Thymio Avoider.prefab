@@ -746,7 +746,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d563b8d63cc633e40bd7cd87ba63a7b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ShowDebugVisuals: 1
+  ShowDebugVisuals: 0
   Tagged: 0
   RaspberryPiCameraFOV: 62
   cameraRange: 20
@@ -770,6 +770,8 @@ MonoBehaviour:
   AvoidingColor: {fileID: 2100000, guid: af5e84c27c7ba384891c1e58b58ecf81, type: 2}
   TaggedColor: {fileID: 2100000, guid: c0bc88cfa1558a34a97d949f098a53e3, type: 2}
   InSafeZoneColor: {fileID: 2100000, guid: ea37e58044b2bed45aa3554f3c50165b, type: 2}
+  SeekingColor: {fileID: 0}
+  Chromosome: []
 --- !u!1 &5419759503125460722
 GameObject:
   m_ObjectHideFlags: 0
