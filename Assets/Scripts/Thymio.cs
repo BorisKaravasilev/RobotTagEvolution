@@ -64,6 +64,7 @@ public abstract class Thymio : MonoBehaviour
 
     protected List<Thymio> RobotsInFOV = new List<Thymio>();
     protected Role role;
+    protected NeuralNetwork _neuralNetwork;
 
     #endregion
 
@@ -73,10 +74,10 @@ public abstract class Thymio : MonoBehaviour
     private int _layerMaskPerimeter;
     private int _layerMaskSafeZone;
     private Thymio[] _robotsInArena;
-    private double _fitness;
+    protected double _fitness;
     private Vector3 _initPos;
     private Quaternion _initRot;
-    
+
     #endregion
 
     protected enum Role
@@ -142,6 +143,18 @@ public abstract class Thymio : MonoBehaviour
         _robotsInArena = FindObjectsOfType<Thymio>();
         _initPos = transform.position;
         _initRot = transform.rotation;
+    }
+
+    public double[] GetChromosome()
+    {
+        _neuralNetwork = new NeuralNetwork(new []{2,3,2});
+        _neuralNetwork.InitializeWeightsAndBiasesRandomly();
+        return _neuralNetwork.GetChromosomeFromWeightsAndBiasesMatrix();
+    }
+
+    public void SetChromosome(double[] chromosome)
+    {
+        _neuralNetwork.UpdateWeightsAndBiases(chromosome);
     }
 
     // Executes every frame

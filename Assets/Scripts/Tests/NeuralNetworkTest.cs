@@ -16,7 +16,7 @@ public class NeuralNetworkTest : MonoBehaviour
         print("Hidden layer: " + weightsAndBiasesInLayer[1]);
         
         var testInputs = new[] { 1.0, 1.0 };
-        var output = neuralNetwork.ComputeOutput(Vector<double>.Build.DenseOfArray(testInputs));
+        var output = neuralNetwork.ComputeOutput(testInputs);
         
         print("Output: " + output);
     }

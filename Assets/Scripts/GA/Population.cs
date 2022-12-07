@@ -17,22 +17,23 @@ public class Population
     double maxMutationRate = 0.1;
     int generationCount = 0;
 
-    public Population(GameObject prefab, List<Transform> spawnPoints)
+    public Population(GameObject prefab, List<Transform> spawnPoints, double mutationProbability, double maxMutationRate)
     {
         this.spawnPoints = spawnPoints;
         this.popSize = spawnPoints.Count;
         this.individuals = new Individual[popSize];
+        this.mutationProbability = mutationProbability;
+        this.maxMutationRate = maxMutationRate;
 
         for (int i = 0; i < individuals.Length; i++)
         {
-            individuals[i] = new Individual(prefab, spawnPoints[i].position);
+            individuals[i] = new Individual(prefab, spawnPoints[i].position, spawnPoints[i].rotation);
             individuals[i].prefabInstance.name = $"Avoider {i}";
         }
     }
 
     public void Respawn()
-    {   
-        
+    {
         populateOffSpingsList();
     }
 
