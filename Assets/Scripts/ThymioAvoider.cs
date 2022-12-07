@@ -7,7 +7,11 @@ public class ThymioAvoider : Thymio
     {
         AvoidPerimeter();
         updateFitness();
-        
+
+        leftMotorTorque = (float) Chromosome[0];
+        rightMotorTorque = (float) Chromosome[1];
+
+        if (transform.position.y < -1f) Tagged = true;
     }
 
     protected override void UpdateLEDColor()
@@ -29,13 +33,9 @@ public class ThymioAvoider : Thymio
 
     public override void updateFitness()
     {
-         if (!Tagged)
-
+        if (!Tagged)
         {
             IncrementFitness(Time.deltaTime);
         }
-      
-        
-        
     }
 }

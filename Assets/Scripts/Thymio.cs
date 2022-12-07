@@ -37,6 +37,9 @@ public abstract class Thymio : MonoBehaviour
     public Material InSafeZoneColor;
     public Material SeekingColor;
 
+    [Header("Brain")]
+    public double[] Chromosome;
+    
     #endregion
 
     #region Protected fields (exposed to derived classes)
@@ -71,7 +74,9 @@ public abstract class Thymio : MonoBehaviour
     private int _layerMaskSafeZone;
     private Thymio[] _robotsInArena;
     private double _fitness;
-
+    private Vector3 _initPos;
+    private Quaternion _initRot;
+    
     #endregion
 
     protected enum Role
@@ -105,6 +110,16 @@ public abstract class Thymio : MonoBehaviour
         _fitness += amount;
     }
 
+    public void Respawn()
+    {
+        Tagged = false;
+        transform.position = _initPos;
+        transform.rotation = _initRot;
+        GetComponent<Rigidbody>().velocity = Vector3.zero;
+        GetComponent<Rigidbody>().angularVelocity = Vector3.zero;
+        _fitness = 0;
+    }
+
     /// <summary>
     /// Returns the fitness of the individual.
     /// </summary>
@@ -125,6 +140,8 @@ public abstract class Thymio : MonoBehaviour
         _layerMaskSafeZone = LayerMask.GetMask("SafeZone");
         LEDRenderer.material = AvoidingColor;
         _robotsInArena = FindObjectsOfType<Thymio>();
+        _initPos = transform.position;
+        _initRot = transform.rotation;
     }
 
     // Executes every frame
@@ -216,13 +233,13 @@ public abstract class Thymio : MonoBehaviour
             rightMotorTorque = 1f;
         }
 
-        if (leftLightSensorValue != LightSensorValue.Perimeter &&
-            rightLightSensorValue != LightSensorValue.Perimeter)
-        {
-            leftMotorTorque = 1f;
-            rightMotorTorque = 1f;
-            avoidingPerimeter = false;
-        }
+        // if (leftLightSensorValue != LightSensorValue.Perimeter &&
+        //     rightLightSensorValue != LightSensorValue.Perimeter)
+        // {
+        //     leftMotorTorque = 1f;
+        //     rightMotorTorque = 1f;
+        //     avoidingPerimeter = false;
+        // }
 
         return avoidingPerimeter;
     }
