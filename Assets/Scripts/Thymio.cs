@@ -8,15 +8,15 @@ public abstract class Thymio : MonoBehaviour
 
     public bool ShowDebugVisuals = true;
     public bool Tagged = false;
-    
+
     public float RaspberryPiCameraFOV = 62f; // field of view in degrees
     public float cameraRange = 14; // in meters
     public Transform RaspberryPiCamera;
-    
+
     [Header("Motors")]
     public List<AxleInfo> AxleInfos; // the information about each individual axle
     public float MotorTorque;
-    
+
     [Header("Sensor Transforms")]
     public Transform LeftLightSensor;  // on the bottom
     public Transform RightLightSensor; // on the bottom
@@ -29,18 +29,22 @@ public abstract class Thymio : MonoBehaviour
     [Space]
     public Transform BackLeftDistanceSensor;
     public Transform BackRightDistanceSensor;
-    
+
     [Header("LED Visualization")]
     public Renderer LEDRenderer;
     public Material AvoidingColor;
     public Material TaggedColor;
     public Material InSafeZoneColor;
+    public Material SeekingColor;
 
+    [Header("Brain")]
+    public double[] Chromosome;
+    
     #endregion
 
     #region Protected fields (exposed to derived classes)
     // ============================================ Protected fields (exposed to derived classes)
-    
+
     // Motor Values
     protected float leftMotorTorque = 0f; // <-- Update me to a value between 0.0f - 1.0f
     protected float rightMotorTorque = 0f; // <-- me too (if you want more speed then increase "motorTorque" in the inspector
@@ -48,7 +52,7 @@ public abstract class Thymio : MonoBehaviour
     // Sensor Values
     protected LightSensorValue leftLightSensorValue;  // on the bottom
     protected LightSensorValue rightLightSensorValue; // on the bottom
-    
+
     protected float LeftLeftDistanceSensorValue;
     protected float LeftDistanceSensorValue;
     protected float MiddleDistanceSensorValue;
@@ -59,19 +63,28 @@ public abstract class Thymio : MonoBehaviour
     protected float BackRightDistanceSensorValue;
 
     protected List<Thymio> RobotsInFOV = new List<Thymio>();
+    protected Role role;
 
     #endregion
-    
+
     #region Private fields
     // ============================================ Private fields
-    
+
     private int _layerMaskPerimeter;
     private int _layerMaskSafeZone;
     private Thymio[] _robotsInArena;
     private double _fitness;
-
-    #endregion
+    private Vector3 _initPos;
+    private Quaternion _initRot;
     
+    #endregion
+
+    protected enum Role
+    {
+        Seeker,
+        Avoider
+    }
+
     protected enum LightSensorValue {
         Perimeter,
         SafeZone,
@@ -82,7 +95,7 @@ public abstract class Thymio : MonoBehaviour
     /// Controller logic setting the torques of the motors based on sensor input.
     /// </summary>
     protected abstract void RobotController();
-    
+
     /// <summary>
     /// Updates the color of LEDs based on sensor input.
     /// </summary>
@@ -97,10 +110,20 @@ public abstract class Thymio : MonoBehaviour
         _fitness += amount;
     }
 
+    public void Respawn()
+    {
+        Tagged = false;
+        transform.position = _initPos;
+        transform.rotation = _initRot;
+        GetComponent<Rigidbody>().velocity = Vector3.zero;
+        GetComponent<Rigidbody>().angularVelocity = Vector3.zero;
+        _fitness = 0;
+    }
+
     /// <summary>
     /// Returns the fitness of the individual.
     /// </summary>
-    protected double GetFitness()
+    public double GetFitness()
     {
         return _fitness;
     }
@@ -117,6 +140,8 @@ public abstract class Thymio : MonoBehaviour
         _layerMaskSafeZone = LayerMask.GetMask("SafeZone");
         LEDRenderer.material = AvoidingColor;
         _robotsInArena = FindObjectsOfType<Thymio>();
+        _initPos = transform.position;
+        _initRot = transform.rotation;
     }
 
     // Executes every frame
@@ -133,12 +158,13 @@ public abstract class Thymio : MonoBehaviour
         RobotController();
         UpdateLEDColor();
         ApplyTorqueToMotors();
+
     }
-    
+
     private void GetRobotPositionsFromCamera()
     {
         RobotsInFOV.Clear();
-        
+
         foreach (Thymio robot in _robotsInArena)
         {
             if (!robot.enabled || robot == this) continue; // Early out if game object is disabled or itself (disabled != robot is tagged)
@@ -147,11 +173,11 @@ public abstract class Thymio : MonoBehaviour
             robotPosition.y = RaspberryPiCamera.position.y; // Pretend that the robot is in the height of the camera
 
             Vector3 vectorToRobot = robotPosition - RaspberryPiCamera.position;
-            
+
             float angleFromCenter = Vector3.Angle(RaspberryPiCamera.forward, vectorToRobot);
             float halfFOVAngle = RaspberryPiCameraFOV / 2f;
             bool robotInFOV = angleFromCenter <= halfFOVAngle && vectorToRobot.magnitude <= cameraRange;
-            
+
             if (robotInFOV && ShowDebugVisuals)
             {
                 Debug.DrawLine(RaspberryPiCamera.position, robotPosition, robot.LEDRenderer.material.color);
@@ -170,13 +196,13 @@ public abstract class Thymio : MonoBehaviour
             Vector3 leftFOVLimit = RaspberryPiCamera.TransformDirection(Vector3.forward) * cameraRange;
             leftFOVLimit = Quaternion.Euler(0, -RaspberryPiCameraFOV / 2f, 0) * leftFOVLimit;
             Debug.DrawRay(RaspberryPiCamera.position, leftFOVLimit, Color.white);
-            
+
             Vector3 rightFOVLimit = RaspberryPiCamera.TransformDirection(Vector3.forward) * cameraRange;
             rightFOVLimit = Quaternion.Euler(0, RaspberryPiCameraFOV / 2f, 0) * rightFOVLimit;
             Debug.DrawRay(RaspberryPiCamera.position, rightFOVLimit, Color.white);
         }
     }
-    
+
     /// <summary>
     /// Handles avoiding of the edge of the arena.
     /// </summary>
@@ -184,9 +210,9 @@ public abstract class Thymio : MonoBehaviour
     protected bool AvoidPerimeter()
     {
         bool avoidingPerimeter = true;
-        
+
         // Motor Speeds
-        if (leftLightSensorValue == LightSensorValue.Perimeter && 
+        if (leftLightSensorValue == LightSensorValue.Perimeter &&
             rightLightSensorValue == LightSensorValue.Perimeter)
         {
             leftMotorTorque = -1f;
@@ -207,13 +233,13 @@ public abstract class Thymio : MonoBehaviour
             rightMotorTorque = 1f;
         }
 
-        if (leftLightSensorValue != LightSensorValue.Perimeter &&
-            rightLightSensorValue != LightSensorValue.Perimeter)
-        {
-            leftMotorTorque = 1f;
-            rightMotorTorque = 1f;
-            avoidingPerimeter = false;
-        }
+        // if (leftLightSensorValue != LightSensorValue.Perimeter &&
+        //     rightLightSensorValue != LightSensorValue.Perimeter)
+        // {
+        //     leftMotorTorque = 1f;
+        //     rightMotorTorque = 1f;
+        //     avoidingPerimeter = false;
+        // }
 
         return avoidingPerimeter;
     }
@@ -239,6 +265,7 @@ public abstract class Thymio : MonoBehaviour
             {
                 axleInfo.leftWheel.motorTorque = 0f;
                 axleInfo.rightWheel.motorTorque = 0f;
+
             }
 
             ApplyLocalPositionToVisuals(axleInfo.leftWheel);
@@ -264,7 +291,7 @@ public abstract class Thymio : MonoBehaviour
         visualWheel.transform.position = position;
         visualWheel.transform.rotation = rotation;
     }
-    
+
     private void ReadLightSensors()
     {
         leftLightSensorValue = ReadSensor(LeftLightSensor);
@@ -281,7 +308,7 @@ public abstract class Thymio : MonoBehaviour
                 if (ShowDebugVisuals) Debug.DrawRay(sensorTransform.position, forwardEndPoint, Color.red);
                 return LightSensorValue.Perimeter;
             }
-            
+
             if (Physics.Raycast(sensorTransform.position, fwd, 5, _layerMaskSafeZone))
             {
                 if (ShowDebugVisuals) Debug.DrawRay(sensorTransform.position, forwardEndPoint, Color.green);
@@ -293,8 +320,38 @@ public abstract class Thymio : MonoBehaviour
         }
     }
 
-    private void ReadDistanceSensors()
+    private void ReadDistance()
     {
-        // TODO: Balazs integrates his code here (feel free to take inspiration from the method above)
+        float distanceLimit = 10;
+        LeftLeftDistanceSensorValue = ReadSensorDistance(LeftLeftDistanceSensor);
+        LeftDistanceSensorValue = ReadSensorDistance(LeftDistanceSensor);
+        MiddleDistanceSensorValue = ReadSensorDistance(MiddleDistanceSensor);
+        RightDistanceSensorValue = ReadSensorDistance(RightDistanceSensor);
+        RightRightDistanceSensorValue = ReadSensorDistance(RightRightDistanceSensor);
+        BackLeftDistanceSensorValue = ReadSensorDistance(BackLeftDistanceSensor);
+        BackRightDistanceSensorValue = ReadSensorDistance(BackRightDistanceSensor);
+
+
+        float ReadSensorDistance(Transform sensorTransform)
+        {
+
+            Ray ray = new Ray(sensorTransform.position, sensorTransform.forward);
+            Vector3 forwardEndPoint = sensorTransform.TransformDirection(Vector3.forward) * distanceLimit;
+            Debug.DrawRay(sensorTransform.position, forwardEndPoint, Color.green);
+            RaycastHit hitData;
+            Physics.Raycast(ray, out hitData, distanceLimit);
+            Debug.Log(hitData.distance);
+            return hitData.distance;
+
+        }
     }
+
+    public abstract void updateFitness();
+    
+    public double getFitness()
+    {
+        return _fitness;
+    }
+
+
 }

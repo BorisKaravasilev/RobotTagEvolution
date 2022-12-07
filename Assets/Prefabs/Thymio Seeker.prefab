@@ -689,8 +689,9 @@ GameObject:
   - component: {fileID: 5959779734551600767}
   - component: {fileID: 2519068182771490041}
   - component: {fileID: 4251142782105490108}
+  - component: {fileID: 332128631581548870}
   m_Layer: 0
-  m_Name: Thymio Avoider
+  m_Name: Thymio Seeker
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -770,6 +771,44 @@ MonoBehaviour:
   AvoidingColor: {fileID: 2100000, guid: af5e84c27c7ba384891c1e58b58ecf81, type: 2}
   TaggedColor: {fileID: 2100000, guid: c0bc88cfa1558a34a97d949f098a53e3, type: 2}
   InSafeZoneColor: {fileID: 2100000, guid: ea37e58044b2bed45aa3554f3c50165b, type: 2}
+  SeekingColor: {fileID: 0}
+--- !u!114 &332128631581548870
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4199367626649424487}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 53b3a221e6cd42e2a6bc3890891f9379, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowDebugVisuals: 1
+  Tagged: 0
+  RaspberryPiCameraFOV: 62
+  cameraRange: 20
+  RaspberryPiCamera: {fileID: 8828796848400431007}
+  AxleInfos:
+  - leftWheel: {fileID: 0}
+    rightWheel: {fileID: 0}
+    motor: 0
+    steering: 0
+  MotorTorque: 8
+  LeftLightSensor: {fileID: 7932437582505815929}
+  RightLightSensor: {fileID: 2885147853945341832}
+  LeftLeftDistanceSensor: {fileID: 4081339046426148080}
+  LeftDistanceSensor: {fileID: 395255789621558130}
+  MiddleDistanceSensor: {fileID: 8663258353823742231}
+  RightDistanceSensor: {fileID: 1530887749703184261}
+  RightRightDistanceSensor: {fileID: 1284809765694842504}
+  BackLeftDistanceSensor: {fileID: 4509049120462703815}
+  BackRightDistanceSensor: {fileID: 2986758505476664875}
+  LEDRenderer: {fileID: 5729652693303485478}
+  AvoidingColor: {fileID: 0}
+  TaggedColor: {fileID: 0}
+  InSafeZoneColor: {fileID: 2100000, guid: 60632ef0c153b4946936cd7f6d3e5263, type: 2}
+  SeekingColor: {fileID: 2100000, guid: 727fc15e45fe02445b0d7925d5f8e744, type: 2}
 --- !u!1 &5419759503125460722
 GameObject:
   m_ObjectHideFlags: 0
