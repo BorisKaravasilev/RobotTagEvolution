@@ -746,7 +746,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d563b8d63cc633e40bd7cd87ba63a7b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ShowDebugVisuals: 0
+  ShowDebugVisuals: 1
   Tagged: 0
   RaspberryPiCameraFOV: 62
   cameraRange: 20
