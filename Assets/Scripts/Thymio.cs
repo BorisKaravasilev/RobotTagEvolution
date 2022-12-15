@@ -8,6 +8,7 @@ public abstract class Thymio : MonoBehaviour
 
     public bool ShowDebugVisuals = true;
     public bool Tagged = false;
+    public bool Fittest = false;
 
     public float RaspberryPiCameraFOV = 62f; // field of view in degrees
     public float cameraRange = 14; // in meters

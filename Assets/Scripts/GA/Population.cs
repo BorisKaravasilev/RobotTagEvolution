@@ -37,7 +37,7 @@ public class Population
         populateOffSpingsList();
     }
 
-    public Individual getFittest()
+    public int getFittest()
     {
         double maxFit = 0;
 
@@ -50,7 +50,7 @@ public class Population
             }
         }
 
-        return individuals[fittestIndex];
+        return fittestIndex;
     }
 
     public int getFittestIndex()
@@ -158,20 +158,36 @@ public class Population
         fitnessOverview += "    Total Fitness:" + totalFitness.ToString();
         Debug.Log(fitnessOverview);
         
-        // var fittestOffSpring = getFittest();
-        // Individual offSpringToAdd = new Individual(fittestOffSpring.getChromosome(), fittestOffSpring.prefabInstance);
+        int fittestIndividualIndex = getFittest();
+        Individual fittestIndividual = individuals[fittestIndividualIndex];
+        // Individual offSpringToAdd = new Individual(fittestIndividual.getChromosome(), fittestIndividual.prefabInstance);}}
         // offSprings.Add(offSpringToAdd);
         //     
         // offSpringToAdd.prefabInstance.GetComponent<Thymio>().Respawn();
         
         
-        for (int i = 0; i < popSize - 1; i++)
+        for (int i = 0; i < popSize; i++)
         {
-            double[] offspringChromosome = Crossover();
-            Individual offspring = new Individual(offspringChromosome, individuals[i].prefabInstance);
-            offSprings.Add(offspring);
+            if (i != fittestIndividualIndex)
+            {
+                double[] offspringChromosome = Crossover();
+                Individual offspring = new Individual(offspringChromosome, individuals[i].prefabInstance);
+                offSprings.Add(offspring);
+                offspring.prefabInstance.GetComponent<Thymio>().Fittest = false;
+                offspring.prefabInstance.name = "Avoider X";
             
-            offSprings[i].prefabInstance.GetComponent<Thymio>().Respawn();
+                offSprings[i].prefabInstance.GetComponent<Thymio>().Respawn();
+               
+            }
+            else
+            {
+                Individual offspring = new Individual( fittestIndividual.getChromosome(), individuals[i].prefabInstance);
+                offSprings.Add(offspring);
+                offspring.prefabInstance.GetComponent<Thymio>().Fittest = true;
+                offspring.prefabInstance.name = "Fittest";
+                
+                offSprings[i].prefabInstance.GetComponent<Thymio>().Respawn();
+            }
 
             // Debug.Log(offspring.prefabInstance.name + ": " + offspring.prefabInstance.GetComponent<Thymio>().Chromosome[0] + ", " + offspring.prefabInstance.GetComponent<Thymio>().Chromosome[1]);
         }
