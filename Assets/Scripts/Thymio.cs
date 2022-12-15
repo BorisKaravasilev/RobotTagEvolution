@@ -66,6 +66,7 @@ public abstract class Thymio : MonoBehaviour
     protected List<Thymio> RobotsInFOV = new List<Thymio>();
     protected Role role;
     protected NeuralNetwork _neuralNetwork;
+    protected double[] chromosome;
 
     #endregion
 
@@ -148,14 +149,18 @@ public abstract class Thymio : MonoBehaviour
 
     public double[] GetChromosome()
     {
-        _neuralNetwork = new NeuralNetwork(new []{2,3,2});
-        _neuralNetwork.InitializeWeightsAndBiasesRandomly();
-        return _neuralNetwork.GetChromosomeFromWeightsAndBiasesMatrix();
+        System.Random rn = new System.Random();
+        // wl, wr, bl, br
+        return new double[] { rn.NextDouble() * 2 - 1, rn.NextDouble() * 2 - 1, rn.NextDouble() * 2 - 1, rn.NextDouble() * 2 - 1 }; 
+        // _neuralNetwork = new NeuralNetwork(new []{2,2});
+        // _neuralNetwork.InitializeWeightsAndBiasesRandomly();
+        // return _neuralNetwork.GetChromosomeFromWeightsAndBiasesMatrix();
     }
 
     public void SetChromosome(double[] chromosome)
     {
-        _neuralNetwork.UpdateWeightsAndBiases(chromosome);
+        this.chromosome = chromosome;
+        // _neuralNetwork.UpdateWeightsAndBiases(chromosome);
     }
 
     // Executes every frame

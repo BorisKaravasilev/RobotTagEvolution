@@ -14,11 +14,11 @@ public class ThymioAvoider : Thymio
         double leftSensorInput = leftLightSensorValue == LightSensorValue.Perimeter ? 0 : 1;
         double rightSensorInput = rightLightSensorValue == LightSensorValue.Perimeter ? 0 : 1;
 
-        var testInputs = new[] { leftSensorInput, rightSensorInput };
-        var output = _neuralNetwork.ComputeOutput(testInputs);
+        // var testInputs = new[] { leftSensorInput, rightSensorInput };
+        // var output = _neuralNetwork.ComputeOutput(testInputs);
         
-        leftMotorTorque = (float) output[0];
-        rightMotorTorque = (float) output[1];
+        leftMotorTorque = (float) (leftSensorInput * chromosome[0] + chromosome[2]);
+        rightMotorTorque =  (float) (rightSensorInput * chromosome[1] + chromosome[3]);
         
         // print("Output: " + output);
 

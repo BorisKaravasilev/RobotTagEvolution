@@ -160,6 +160,7 @@ public class Population
         
         int fittestIndividualIndex = getFittest();
         Individual fittestIndividual = individuals[fittestIndividualIndex];
+        Debug.Log("Gene of the fittest individual: " + fittestIndividual.getChromosome()[0]+ fittestIndividual.getChromosome()[1]+ fittestIndividual.getChromosome()[2]+ fittestIndividual.getChromosome()[3]);
         // Individual offSpringToAdd = new Individual(fittestIndividual.getChromosome(), fittestIndividual.prefabInstance);}}
         // offSprings.Add(offSpringToAdd);
         //     
