@@ -17,26 +17,27 @@ public class Population
     double maxMutationRate = 0.1;
     int generationCount = 0;
 
-    public Population(GameObject prefab, List<Transform> spawnPoints)
+    public Population(GameObject prefab, List<Transform> spawnPoints, double mutationProbability, double maxMutationRate)
     {
         this.spawnPoints = spawnPoints;
         this.popSize = spawnPoints.Count;
         this.individuals = new Individual[popSize];
+        this.mutationProbability = mutationProbability;
+        this.maxMutationRate = maxMutationRate;
 
         for (int i = 0; i < individuals.Length; i++)
         {
-            individuals[i] = new Individual(prefab, spawnPoints[i].position);
+            individuals[i] = new Individual(prefab, spawnPoints[i].position, spawnPoints[i].rotation);
             individuals[i].prefabInstance.name = $"Avoider {i}";
         }
     }
 
     public void Respawn()
-    {   
-        
+    {
         populateOffSpingsList();
     }
 
-    public Individual getFittest()
+    public int getFittest()
     {
         double maxFit = 0;
 
@@ -49,7 +50,7 @@ public class Population
             }
         }
 
-        return individuals[fittestIndex];
+        return fittestIndex;
     }
 
     public int getFittestIndex()
@@ -151,20 +152,42 @@ public class Population
         {
             double fitness = individual.getFitness();
             totalFitness += fitness;
-            fitnessOverview += fitness.ToString() + ", ";
+            // fitnessOverview += fitness.ToString() + ", ";
         }
 
         fitnessOverview += "    Total Fitness:" + totalFitness.ToString();
         Debug.Log(fitnessOverview);
         
-        //offSprings.Add(getFittest());
+        int fittestIndividualIndex = getFittest();
+        Individual fittestIndividual = individuals[fittestIndividualIndex];
+        // Individual offSpringToAdd = new Individual(fittestIndividual.getChromosome(), fittestIndividual.prefabInstance);}}
+        // offSprings.Add(offSpringToAdd);
+        //     
+        // offSpringToAdd.prefabInstance.GetComponent<Thymio>().Respawn();
+        
+        
         for (int i = 0; i < popSize; i++)
         {
-            double[] offspringChromosome = Crossover();
-            Individual offspring = new Individual(offspringChromosome, individuals[i].prefabInstance);
-            offSprings.Add(offspring);
+            if (i != fittestIndividualIndex)
+            {
+                double[] offspringChromosome = Crossover();
+                Individual offspring = new Individual(offspringChromosome, individuals[i].prefabInstance);
+                offSprings.Add(offspring);
+                offspring.prefabInstance.GetComponent<Thymio>().Fittest = false;
+                offspring.prefabInstance.name = "Avoider X";
             
-            offSprings[i].prefabInstance.GetComponent<Thymio>().Respawn();
+                offSprings[i].prefabInstance.GetComponent<Thymio>().Respawn();
+               
+            }
+            else
+            {
+                Individual offspring = new Individual( fittestIndividual.getChromosome(), individuals[i].prefabInstance);
+                offSprings.Add(offspring);
+                offspring.prefabInstance.GetComponent<Thymio>().Fittest = true;
+                offspring.prefabInstance.name = "Fittest";
+                
+                offSprings[i].prefabInstance.GetComponent<Thymio>().Respawn();
+            }
 
             // Debug.Log(offspring.prefabInstance.name + ": " + offspring.prefabInstance.GetComponent<Thymio>().Chromosome[0] + ", " + offspring.prefabInstance.GetComponent<Thymio>().Chromosome[1]);
         }

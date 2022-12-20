@@ -5,13 +5,28 @@ public class ThymioAvoider : Thymio
 {
     protected override void RobotController()
     {
-        AvoidPerimeter();
+        // leftMotorTorque = (float) Chromosome[0];
+        // rightMotorTorque = (float) Chromosome[1];
+        //
+        // AvoidPerimeter();
         updateFitness();
 
-        leftMotorTorque = (float) Chromosome[0];
-        rightMotorTorque = (float) Chromosome[1];
+        double leftSensorInput = leftLightSensorValue == LightSensorValue.Perimeter ? 0 : 1;
+        double rightSensorInput = rightLightSensorValue == LightSensorValue.Perimeter ? 0 : 1;
 
-        if (transform.position.y < -1f) Tagged = true;
+        var testInputs = new[] { leftSensorInput, rightSensorInput };
+        var output = _neuralNetwork.ComputeOutput(testInputs);
+        
+        leftMotorTorque = (float) output[0];
+        rightMotorTorque = (float) output[1];
+        
+        // print("Output: " + output);
+
+        if (transform.position.y < -1f)
+        {
+            Tagged = true;
+            _fitness = _fitness / 2;
+        }
     }
 
     protected override void UpdateLEDColor()
@@ -33,9 +48,14 @@ public class ThymioAvoider : Thymio
 
     public override void updateFitness()
     {
-        if (!Tagged)
+        if (!Tagged || !(leftLightSensorValue == LightSensorValue.Perimeter || rightLightSensorValue == LightSensorValue.Perimeter))
         {
-            IncrementFitness(Time.deltaTime);
+            // if (leftLightSensorValue == LightSensorValue.SafeZone && rightLightSensorValue == LightSensorValue.SafeZone)
+            // {
+            //     IncrementFitness(Time.deltaTime * 9);
+            // }
+            
+            IncrementFitness(Time.deltaTime * (leftMotorTorque + rightMotorTorque));
         }
     }
 }

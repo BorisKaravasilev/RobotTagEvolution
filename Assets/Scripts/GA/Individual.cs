@@ -7,7 +7,6 @@ using System;
 public class Individual
 {
     private double[] chromosome;
-    int chromosomeLength = 2;
     public GameObject prefabInstance;
 
     public Individual(double [] chromosome, GameObject instance)
@@ -16,27 +15,19 @@ public class Individual
         SetChromosome(chromosome);
     }
 
-    public Individual(GameObject prefab, Vector3 spawnPos)
+    public Individual(GameObject prefab, Vector3 spawnPosition, Quaternion spawnRotation)
     {
-        double[] randomChromosome = new double[chromosomeLength];
         prefabInstance = GameObject.Instantiate(prefab);
-        prefabInstance.transform.position = spawnPos;
-
-
-        System.Random rnd = new System.Random();
-
-        for(int j = 0; j < chromosomeLength; j++)
-        {
-            randomChromosome[j] = 2.0 * rnd.NextDouble() - 1.0;
-        }
+        prefabInstance.transform.position = spawnPosition;
+        prefabInstance.transform.rotation = spawnRotation;
         
-        SetChromosome(randomChromosome);
+        SetChromosome(prefabInstance.GetComponent<Thymio>().GetChromosome());
     }
 
     public void SetChromosome(double [] chromosome)
     {
         this.chromosome = chromosome;
-        prefabInstance.GetComponent<Thymio>().Chromosome = this.chromosome;
+        prefabInstance.GetComponent<Thymio>().SetChromosome(this.chromosome);
     }
 
     public double getFitness()
@@ -46,7 +37,7 @@ public class Individual
 
     public int getChromosomeLength()
     {
-        return chromosomeLength;
+        return chromosome.Length;
     }
 
     public double[] getChromosome()

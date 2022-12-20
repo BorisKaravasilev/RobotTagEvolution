@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using MathNet.Numerics.Distributions;
 using MathNet.Numerics.LinearAlgebra;
 using MathNet.Numerics.LinearAlgebra.Double;
@@ -110,15 +112,29 @@ public class NeuralNetwork
             nextMatrixStartIndex += matrixElementCount;
             
             double[] currentFlattenedMatrix = segment.Array;
-            double [,] weightsAndBiases = ArrayFlattener.Unflatten(currentFlattenedMatrix, neuronsInLayer + 1, neuronsInNextLayer);
+            double [,] weightsAndBiases = ArrayFlattener.Unflatten(currentFlattenedMatrix, neuronsInNextLayer, neuronsInLayer + 1);
             
             _weightsAndBiasesInLayer[i] = DenseMatrix.OfArray(weightsAndBiases);
         }
     }
 
-    public Vector<double> ComputeOutput(Vector<double> input)
+    public double[] GetChromosomeFromWeightsAndBiasesMatrix()
     {
-        Vector<double> propagatedInput = input;
+        List<double> chromosome = new List<double>();
+        
+        foreach (var layer in _weightsAndBiasesInLayer)
+        {
+            var arrayLayer = layer.ToArray();
+            var flattenedLayer = ArrayFlattener.Flatten(layer.ToArray());
+            chromosome = chromosome.Concat(flattenedLayer.ToList()).ToList();
+        }
+
+        return chromosome.ToArray();
+    }
+
+    public Vector<double> ComputeOutput(double[] input)
+    {
+        Vector<double> propagatedInput = Vector<double>.Build.DenseOfArray(input);
         int i = 0;
         
         foreach (Matrix<double> weightsAndBiasesMatrix in _weightsAndBiasesInLayer)
